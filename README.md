@@ -36,7 +36,7 @@ https://github.com/L-Temple/OC-NuclearCooler
     }
   }
 }
-```
+```json
 slyb:项目名,你启动时需要输入的名称,自行填写
 
 resource: 要加入核反应堆中的原材料(如铀棒、冷却单元)
