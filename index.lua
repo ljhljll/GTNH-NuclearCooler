@@ -160,7 +160,7 @@ end
 
 -- 核电仓热量检测
 local function checkReactorChamberHeat(project)
-    x = redstone2.getInput(5);
+    x = redstone2.getInput(controlside);
     if x > 0 then
         if (reactor_chamber.getHeat() >= 100) then
             os.execute("cls")
@@ -241,7 +241,7 @@ end
 -- 核电仓运行时
 local function reactorChamberRunTime(project)
     os.execute("cls")
-    x = redstone2.getInput(5);
+    x = redstone2.getInput(controlside);
     print("反应堆正常运行!")
     while true do
         if x > 0 then
@@ -263,7 +263,7 @@ local function startWithConfig()
     local isOK = 0
 
     while whileFlag do
-        x = redstone2.getInput(5);
+        x = redstone2.getInput(controlside);
         if x > 0 then
             isOK = 0
             -- 判断并输出原材料箱中原材料是否满足
