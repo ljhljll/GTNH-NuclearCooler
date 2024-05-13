@@ -2,7 +2,6 @@ local component = require("component")
 local transposer = component.transposer
 local sides = require("sides")
 local database = require("database")
-local event = require("evet")
 
 local function checkItemCount(itemName, count)
     local num = 0
@@ -25,10 +24,13 @@ local function insertItemsIntoReactorChamber(scheme, rc)
         local nowIndex = 0
         -- pairs性能比#table性能差，由于此处需要循环遍历,故使用#
         for j = 1, #scheme.resource[i].slot, 1 do
-            while nowIndex <= #sourceBoxitemList do
+            while nowIndex < #sourceBoxitemList do
                 local item = sourceBoxitemList[nowIndex]
                 if item.name == scheme.resource[i].name then
-                    transposer.transferItem(sides.back, rc.side, 1, nowIndex, scheme.resource[i].slot[j])
+                    transposer.transferItem(sides.back, rc.side, 1, nowIndex + 1, scheme.resource[i].slot[j])
+                    if transposer.getSlotStackSize(sides.back, nowIndex + 1) == 0 then
+                        nowIndex = nowIndex + 1
+                    end
                     break
                 end
                 nowIndex = nowIndex + 1
@@ -38,7 +40,7 @@ local function insertItemsIntoReactorChamber(scheme, rc)
 end
 
 local function stopReactorChamberBySides(side)
-    database.redstone.setOutput(side, 0)
+    database.getControlRedstone().setOutput(side, 0)
 end
 
 local function stopAllReactorChamber()
@@ -47,17 +49,21 @@ local function stopAllReactorChamber()
     end
 end
 
+local function remove(side, slot)
+    transposer.transferItem(side, side.back, 1, slot)
+end
+
 local function insert(side, slot, name)
     while true do
         local sourceBox = transposer.getAllStacks(sides.back).getAll()
         for i = 1, #sourceBox, 1 do
             local item = sourceBox[i]
             if item.name == name then
-                transposer.transferItem(sides.back, side, 1, i - 1, slot)
+                transposer.transferItem(sides.back, side, 1, i, slot)
                 break
             end
         end
-        print(rc.address .. "材料箱未找到物品:" .. name)
+        print("材料箱未找到物品:" .. name)
         os.sleep(1)
     end
 end
@@ -65,12 +71,12 @@ end
 local function removeAndInsert(rcSide, targetSlot, itemName)
     stopReactorChamberBySides(rcSide)
     remove(rcSide, targetSlot)
-    insert()
+    insert(rcSide, targetSlot, itemName)
 end
 
 local function checkItemDmg(rcBox, configResource, side)
     for i = 1, #configResource.slot, 1 do
-        local boxSlot = configResource.solt[i] - 1
+        local boxSlot = configResource.solt[i]
         if rcBox[boxSlot].damage ~= nil then
             if rcBox[boxSlot].damage >= configResource.slot[i].dmg then
                 removeAndInsert(side, boxSlot, configResource.name)

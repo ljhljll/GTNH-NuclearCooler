@@ -1,11 +1,9 @@
-local component = require("component")
 local database = require("database")
 local scanner = require("scanner")
 local config = require("config")
 local action = require("action")
-local sides = require("sides")
-
-local threads = {}
+local thread = require("thread")
+local detection = require("coolantcellThread")
 
 local function configSelect()
     print("请输入要启用的模式:")
@@ -19,16 +17,24 @@ end
 
 local function reactorChamberStart(scheme)
     os.execute("cls")
+    local threads = {}
 
-    while true do
-        if not database.getGlobalRedstone then
-            print("全局开关未开启,反应堆停止")
-            action.stopAllReactorChamber()
-            os.exit()
+    for index, rc in pairs(database.reactorChambers) do
+        print(#database.reactorChambers)
+        print("当前方向" .. rc.side)
+        print(rc.running)
+        if not rc.running then
+            goto continue
         end
-        os.sleep(1)
-        -- action.checkReactorChamberDMG(scheme)
+        threads[index] = thread.create(detection.runningReactorChamber, rc, scheme)
+        ::continue::
     end
+    print("线程开启")
+    print(#threads)
+    thread.waitForAll(threads)
+    print("子线程已全部死亡")
+    action.stopAllReactorChamber()
+    print("核反应堆已关闭")
 end
 local function startWithConfig()
     local scheme = configSelect()
@@ -47,7 +53,7 @@ local function startWithConfig()
     end
 
     local runningNumber = 0
-    for _, rc in pairs(database.reactorChambers) do
+    for index, rc in pairs(database.reactorChambers) do
         if runningNumber == chamberNumber then
             break
         end
@@ -63,6 +69,7 @@ local function init()
     database.scanReactorRedstone()
     if not database.getGlobalRedstone then
         print("未开启全局开关")
+        action.stopAllReactorChamber()
         os.exit(0)
     end
     database.scanAdator()
@@ -70,6 +77,7 @@ end
 
 local function startSelect()
     init()
+    action.stopAllReactorChamber()
     print("请输入(0)选择配置文件启动 (1)直接启动:")
     while true do
         local select = io.read()
