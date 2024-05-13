@@ -1,10 +1,15 @@
 local database = require("database")
+local action = require("action")
 
-local t
+local nowRc
 
-local function start()
-    event.listen("")
+local function runningReactorChamber(rc, scheme)
+    nowRc = rc
+    while nowRc.running do
+        action.checkReactorChamberDMG(rc, scheme)
+    end
 end
+
 return {
 
 }
