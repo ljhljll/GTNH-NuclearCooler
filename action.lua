@@ -18,16 +18,20 @@ local function checkItemCount(itemName, count)
 end
 
 -- 向核电仓中转移原材料
-local function insertItemsIntoReactorChamber(scheme, adaptor)
+local function insertItemsIntoReactorChamber(scheme, rc)
     local sourceBoxitemList = transposer.getAllStacks(sides.back).getAll()
-    -- local reactorChamber = transposer.getAllStacks(adaptor.side)
 
     for i = 1, #scheme.resource do
-        for indexJ, j in pairs(scheme.resource[i].slot) do
-            for index, item in pairs(sourceBoxitemList) do
+        local nowIndex = 0
+        -- pairs性能比#table性能差，由于此处需要循环遍历,故使用#
+        for j = 1, #scheme.resource[i].slot, 1 do
+            while nowIndex <= #sourceBoxitemList do
+                local item = sourceBoxitemList[nowIndex]
                 if item.name == scheme.resource[i].name then
-                    transposer.transferItem(sides.back, adaptor.side, 1, index + 1, j)
+                    transposer.transferItem(sides.back, rc.side, 1, nowIndex, scheme.resource[i].slot[j])
+                    break
                 end
+                nowIndex = nowIndex + 1
             end
         end
     end
@@ -43,57 +47,47 @@ local function stopAllReactorChamber()
     end
 end
 
-local function replaceChangeNameItem(box, rc, boxSlot, name, changeName)
-    if box[boxSlot - 1].name == nil then
-        stopReactorChamberBySides(rc.side)
-        event.push("insertItem", rc, boxSlot, name)
-        return true
-    end
-    if box[boxSlot - 1].name ~= name and box[boxSlot - 1].name == changeName then
-        stopReactorChamberBySides(rc.side)
-        event.push("removeAndInsert", rc, boxSlot, name)
-        return true
-    end
-    return false
-end
-
-local function replaceLowDamageItem(box, rc, boxSlot, name, dmg)
-    if box[boxSlot - 1].damage == nil then
-        stopReactorChamberBySides(rc.side)
-        event.push("insertItem", rc, boxSlot, name)
-        return true
-    end
-
-    if box[boxSlot - 1].damage >= dmg then
-        event.push("removeAndInsert", rc, boxSlot, name, 100)
-        return true
-    end
-    return false
-end
-
-local function checkReactorChamberDMG(scheme)
-    for i = 1, #scheme.resource do
-        for index, rc in pairs(database.runningrReactorChamber) do
-            local isStop = false
-            local box = transposer.getAllStacks(rc.side).getAll();
-            for _, slot in pairs(scheme.resource[i].slot) do
-                -- 无需检测耐久
-                if scheme.resource[i].dmg == -1 then
-                    isStop = replaceChangeNameItem(box, rc, slot, scheme.resource[i].name, scheme.resource[i]
-                        .changeName)
-
-                    if isStop then
-                        goto continue
-                    end
-                end
-                -- 需检测耐久
-                if scheme.resource[i].dmg ~= -1 then
-                    isStop = replaceLowDamageItem(box, rc, slot, scheme.resource[i].name, scheme.resource[i].dmg)
-                end
+local function insert(side, slot, name)
+    while true do
+        local sourceBox = transposer.getAllStacks(sides.back).getAll()
+        for i = 1, #sourceBox, 1 do
+            local item = sourceBox[i]
+            if item.name == name then
+                transposer.transferItem(sides.back, side, 1, i - 1, slot)
+                break
             end
-            ::continue::
-            database.runningrReactorChamber[rc.side] = nil
-            database.waitCoolingReactorChamber[rc.side] = rc
+        end
+        print(rc.address .. "材料箱未找到物品:" .. name)
+        os.sleep(1)
+    end
+end
+
+local function removeAndInsert(rcSide, targetSlot, itemName)
+    stopReactorChamberBySides(rcSide)
+    remove(rcSide, targetSlot)
+    insert()
+end
+
+local function checkItemDmg(rcBox, configResource, side)
+    for i = 1, #configResource.slot, 1 do
+        local boxSlot = configResource.solt[i] - 1
+        if rcBox[boxSlot].damage ~= nil then
+            if rcBox[boxSlot].damage >= configResource.slot[i].dmg then
+                removeAndInsert(side, boxSlot, configResource.name)
+                goto continue
+            end
+        end
+        ::continue::
+    end
+end
+
+local function checkReactorChamberDMG(rc, scheme)
+    local rcBox = transposer.getAllStacks(rc.side).getAll()
+    for i = 1, #scheme.resource do
+        if scheme.resource[i].dmg ~= -1 then
+            checkItemDmg(rcBox, scheme.resource[i], rc.side)
+        else
+
         end
     end
 end

@@ -5,9 +5,7 @@ local redstone
 local globalRedstoneSide
 local scanSide = { sides.top, sides.right, sides.bottom, sides.left }
 local openNum = 1
-local adaptors = {}
-local runningrReactorChamber
-local waitCoolingReactorChamber
+local reactorChambers = {}
 
 
 local function getGlobalRedstone()
@@ -26,7 +24,7 @@ local function getGlobalRedstone()
 end
 
 local function setOpenNum(num)
-    if num <= 0 or num > #adaptors then
+    if num <= 0 or num > #reactorChambers then
         return false
     end
     openNum = num
@@ -54,10 +52,11 @@ local function scanAdator()
         for address, name in pairs(reactorChamberList) do
             local reactor = component.proxy(address)
             if reactor.producesEnergy() then
-                adaptors[scanSide[i]] = {
+                reactorChambers[scanSide[i]] = {
                     reactor = reactor,
                     address = address,
-                    side = scanSide[i]
+                    side = scanSide[i],
+                    running = false
                 }
             end
         end
@@ -69,9 +68,8 @@ return {
     getOpenNum = getOpenNum,
     scanAdator = scanAdator,
     scanReactorRedstone = scanReactorRedstone,
-    adaptors = adaptors,
+    reactorChambers = reactorChambers,
     getGlobalRedstone = getGlobalRedstone,
     redstone = redstone,
-    scanSide = scanSide,
-    runningrReactorChamber = runningrReactorChamber
+    scanSide = scanSide
 }

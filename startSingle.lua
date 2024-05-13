@@ -5,6 +5,8 @@ local config = require("config")
 local action = require("action")
 local sides = require("sides")
 
+local threads = {}
+
 local function configSelect()
     print("请输入要启用的模式:")
     local scheme = io.read()
@@ -17,13 +19,15 @@ end
 
 local function reactorChamberStart(scheme)
     os.execute("cls")
+
     while true do
         if not database.getGlobalRedstone then
             print("全局开关未开启,反应堆停止")
             action.stopAllReactorChamber()
             os.exit()
         end
-        action.checkReactorChamberDMG(scheme)
+        os.sleep(1)
+        -- action.checkReactorChamberDMG(scheme)
     end
 end
 local function startWithConfig()
@@ -43,15 +47,15 @@ local function startWithConfig()
     end
 
     local runningNumber = 0
-    for _, item in pairs(database.adaptors) do
+    for _, rc in pairs(database.reactorChambers) do
         if runningNumber == chamberNumber then
             break
         end
-        action.insertItemsIntoReactorChamber(scheme, item)
+        action.insertItemsIntoReactorChamber(scheme, rc)
         runningNumber = runningNumber + 1
+        rc.running = true
     end
 
-    database.runningrReactorChamber = table.unpack(database.adaptors, 1, database.getOpenNum())
     reactorChamberStart(scheme)
 end
 
