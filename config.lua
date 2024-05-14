@@ -22,7 +22,9 @@ return {
             --- 用于散热的组件 name:散热物品名  changeName: 临时用于替换的元件
             insurance = {
                 name = "IC2:reactorVentGold",
-                changeName = "gregtech:gt.360k_Helium_Coolantcell"
+                changeName = "gregtech:gt.360k_Helium_Coolantcell",
+                -- 散热组件的耐久要求(根据散热组件可承受的热熔来，例如超频散热片的热熔为10000)，只有小于该值的散热片会被使用
+                dmg = 3000
             }
         }
     },
@@ -30,7 +32,7 @@ return {
     energyLatch = false,
     -- 电量锁存器红石端口的地址
     energyLatchRedstone = "",
-    globalRedstone = "292c254c-d4c6-4372-81c8-0c4b86d6a989",
+    globalRedstone = "03e7f8b7-2048-437f-80f1-d5dbd5b5787a",
     -- 当核反应堆达到该热度时,需使用散热组件进行散热,反应堆默认热容为10000
     dangerHeat = 100
 }

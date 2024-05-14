@@ -21,9 +21,9 @@ local function getGlobalRedstone()
         return global.getInput(getGlobalRedstoneSide()) > 0
     end
     local signal = global.getInput()
-    for _ = 1, #signal, 1 do
-        if signal[_] > 0 then
-            globalRedstoneSide = _
+    for side, num in pairs(signal) do
+        if num > 0 then
+            globalRedstoneSide = side
             return true
         end
     end
@@ -31,6 +31,7 @@ local function getGlobalRedstone()
 end
 
 local function setOpenNum(num)
+    print(#reactorChambers .. "扫描了核电数量")
     if num <= 0 or num > #reactorChambers then
         return false
     end
@@ -45,7 +46,7 @@ end
 
 local function scanReactorRedstone()
     for address, name in pairs(component.list("redstone")) do
-        if address ~= config.globalRedstone then
+        if address ~= config.globalRedstone and address ~= config.energyLatchRedstone then
             controlRedstone = component.proxy(address)
             break;
         end
@@ -54,9 +55,11 @@ end
 
 local function scanAdator()
     local reactorChamberList = component.list("reactor")
+    local index = 1
     for i = 1, #scanSide, 1 do
-        controlRedstone.setOutput(scanSide[i], 15)
-        local index = 1
+        repeat
+            local startSingal = controlRedstone.setOutput(scanSide[i], 15)
+        until (startSingal == 15)
         for address, name in pairs(reactorChamberList) do
             local reactor = component.proxy(address)
             if reactor.producesEnergy() then
@@ -69,7 +72,9 @@ local function scanAdator()
                 index = index + 1
             end
         end
-        controlRedstone.setOutput(scanSide[i], 0)
+        repeat
+            local closeSingal = controlRedstone.setOutput(scanSide[i], 0)
+        until (closeSingal == 0)
     end
 end
 

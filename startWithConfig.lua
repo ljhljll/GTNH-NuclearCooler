@@ -20,9 +20,6 @@ local function reactorChamberStart(scheme)
     local threads = {}
 
     for index, rc in pairs(database.reactorChambers) do
-        print(#database.reactorChambers)
-        print("当前方向" .. rc.side)
-        print(rc.running)
         if not rc.running then
             goto continue
         end
@@ -72,24 +69,7 @@ local function init()
     database.scanAdator()
 end
 
-local function startSelect()
-    init()
-    action.stopAllReactorChamber()
-    print("请输入(0)选择配置文件启动 (1)直接启动:")
-    while true do
-        local select = io.read()
-        if select == "0" then
-            startWithConfig()
-            break
-        elseif select == "1" then
-            break
-        elseif select == "-1" then
-            os.exit(0)
-        else
-            print("Please enter [0]:start with config or [1]:just start:")
-        end
-    end
-end
 
-
-startSelect()
+init()
+action.stopAllReactorChamber()
+startWithConfig()
