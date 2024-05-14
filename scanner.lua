@@ -1,7 +1,4 @@
-local component = require("component")
 local database = require("database")
-local sides = require("sides")
-local config = require("config")
 local action = require("action")
 
 local function scanSchame(scheme)
