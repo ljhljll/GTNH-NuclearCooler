@@ -129,11 +129,8 @@ end
 
 -- 反应堆降温
 local function heatDissipation(project)
-    local sourceBoxitemList = transposer.getAllStacks(sourceBoxSide).getAll()
     local reactorChamber = transposer.getAllStacks(reactorChamberSide)
     local reactorChambeerList = reactorChamber.getAll();
-    local reactorChamberLenth = reactorChamber.count()
-    local projectLenth = #project.resource
     -- 获取核电仓中是否有空位或替换一个冷却单元下来
     local targetIndex = -1
     for index, item in pairs(reactorChambeerList) do
