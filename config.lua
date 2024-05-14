@@ -26,5 +26,11 @@ return {
             }
         }
     },
-    globalRedstone = "292c254c-d4c6-4372-81c8-0c4b86d6a989"
+    -- 是否开启电量锁存器(提供一个红石端口,向该端口开启红石信号后开启核电)
+    energyLatch = false,
+    -- 电量锁存器红石端口的地址
+    energyLatchRedstone = "",
+    globalRedstone = "292c254c-d4c6-4372-81c8-0c4b86d6a989",
+    -- 当核反应堆达到该热度时,需使用散热组件进行散热,反应堆默认热容为10000
+    dangerHeat = 100
 }

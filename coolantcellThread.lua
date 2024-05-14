@@ -1,21 +1,32 @@
 local database = require("database")
 local action = require("action")
-
-local nowRc
+local config = require("config")
+local component = require("component")
 
 local function runningReactorChamber(rc, scheme)
-    nowRc = rc
-    print(database.getGlobalRedstone())
-    database.getControlRedstone().setOutput(rc.side, 15)
-    while nowRc.running do
+    while rc.running do
         if not database.getGlobalRedstone() then
-            nowRc.running = false
+            rc.running = false
             break;
         end
-        print("检测一次")
-        --action.checkReactorChamberDMG(rc, scheme)
-        os.sleep(5)
-        print("休眠结束")
+
+        if config.energyLatch then
+            local latchRedstone = component.proxy(config.energyLatchRedstone)
+            local singalTable = latchRedstone.getInput()
+            for i = 1, #singalTable, 1 do
+                if singalTable[i] > 0 then
+                    goto startCheck
+                end
+            end
+            action.stopReactorChamberBySides(rc)
+            goto nextCheck
+        end
+        ::startCheck::
+        action.checkReactorChamberDMG(rc, scheme)
+        action.checkReactorChamberHeat(rc, scheme)
+        action.startReactorChamber(rc)
+        ::nextCheck::
+        os.sleep(1)
     end
 end
 

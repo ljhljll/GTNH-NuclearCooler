@@ -29,10 +29,7 @@ local function reactorChamberStart(scheme)
         threads[index] = thread.create(detection.runningReactorChamber, rc, scheme)
         ::continue::
     end
-    print("线程开启")
-    print(#threads)
     thread.waitForAll(threads)
-    print("子线程已全部死亡")
     action.stopAllReactorChamber()
     print("核反应堆已关闭")
 end
