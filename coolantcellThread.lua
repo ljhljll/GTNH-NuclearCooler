@@ -26,20 +26,21 @@ local function runningReactorChamber(rc)
             break;
         end
 
-
+        local canCheck = true
         if config.energyLatchRedstone ~= -1 then
             if not getLatchRedstoneSingal() then
                 action.stopReactorChamberByRc(rc)
-                goto continue
+                canCheck = false
             end
         end
-        local scheme = config.scheme[rc.scheme]
-        action.checkReactorChamberDMG(rc, scheme)
-        action.checkReactorChamberHeat(rc, scheme)
-        if rc.thresholdHeat == -1 then
-            action.startReactorChamber(rc)
+        if canCheck then
+            local scheme = config.scheme[rc.scheme]
+            action.checkReactorChamberDMG(rc, scheme)
+            action.checkReactorChamberHeat(rc, scheme)
+            if rc.thresholdHeat == -1 then
+                action.startReactorChamber(rc)
+            end
         end
-        ::continue::
         os.sleep(0.5)
     end
     print(rc.reactorChamberAddr .. " is shutdown")

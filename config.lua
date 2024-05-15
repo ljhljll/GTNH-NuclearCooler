@@ -35,8 +35,8 @@ return {
      是否开启电量控制(提供一个红石端口,向该端口开启红石信号后开启核电)
      填入电量控制红石端口的地址,默认不启用
     --]]
-    energyLatchRedstone = -1,
-    globalRedstone = "03e7f8b7-2048-437f-80f1-d5dbd5b5787a",
+    energyLatchRedstone = "e2cc042c-8f70-4cdf-9884-bf91e2f9f2d3",
+    globalRedstone = "a6f9f32d-2c8a-4b9e-8d07-0db6683d5939",
     -- 当核反应堆达到该热度时,需使用散热组件进行散热,反应堆默认热容为10000
     dangerHeat = 100,
     --[[
@@ -53,19 +53,19 @@ return {
         {
             scheme = "slyb",
             -- 预热堆温,默认-1不开启,用于99%堆核电(填9900)
-            thresholdHeat = 9900,
+            thresholdHeat = -1,
             -- 核电仓地址
-            reactorChamberAddr = "",
+            reactorChamberAddr = "de50faf3-f2c7-4fa0-80dc-5ef42d5acabe",
             -- 核电仓方向
-            reactorChamberSide = 3,
+            reactorChamberSide = 2,
             -- 开关核电的红石端口地址
-            switchRedstone = "",
+            switchRedstone = "4a10bd62-ceea-40ca-8058-63985c39e4f6",
             -- 转运器地址
-            transforAddr = "",
+            transforAddr = "fac41e7c-475a-4daa-841a-37c43d9b5cb5",
             -- 输入原材料的箱子位置(对转运器来说,例如填5则箱子需要在转运器的左边(east方向))
-            inputSide = 5,
+            inputSide = 4,
             -- 输出低耐久冷却单元的箱子位置(对转运器来说,例如填4则箱子需要在转运器的右边(west方向))
-            outputSide = 4,
+            outputSide = 5,
             -- 输出枯竭燃料棒的箱子位置(对转运器来说,例如填0则箱子需要在转运器的下边
             changeItemOutputSide = 0,
             -- 用于存放散热组件的箱子(也用作临时存储)
@@ -74,12 +74,12 @@ return {
         {
             scheme = "slyb",
             thresholdHeat = -1,
-            reactorChamberAddr = "",
-            reactorChamberSide = 3,
-            switchRedstone = "",
-            transforAddr = "",
-            inputSide = 5,
-            outputSide = 4,
+            reactorChamberAddr = "c3725cc1-13ad-42b9-a98a-2ff576bb7086",
+            reactorChamberSide = 2,
+            switchRedstone = "5a46748c-30a9-41fe-b2fe-a921affe730a",
+            transforAddr = "d226e5fa-ce0f-4601-b2c1-ce5c94b37e41",
+            inputSide = 4,
+            outputSide = 5,
             changeItemOutputSide = 0,
             tempSide = 1
         }

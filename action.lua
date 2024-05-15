@@ -1,39 +1,27 @@
 local component = require("component")
-local sides = require("sides")
 local database = require("database")
 local config = require("config")
 
-local function checkItemCount(itemName, count)
-    local num = 0
-    local itemList = transposer.getAllStacks(sides.front).getAll()
-    for index, item in pairs(itemList) do
-        if item.name and item.name == itemName then
-            num = num + item.size
-        end
-
-        if num >= count then return true end
-    end
-    return false
-end
-
--- 向核电仓中转移原材料
-local function insertItemsIntoReactorChamber(runningTable)
-    local sourceBoxitemList = transposer.getAllStacks(sides.front).getAll()
-
-    for i = 1, #scheme.resource do
-        local nowIndex = 0
-        -- pairs性能比#table性能差，由于此处需要多层循环遍历,故使用numeric for
-        for j = 1, #scheme.resource[i].slot, 1 do
-            while nowIndex < #sourceBoxitemList do
-                local item = sourceBoxitemList[nowIndex]
-                if item.name == scheme.resource[i].name then
-                    transposer.transferItem(sides.front, rc.side, 1, nowIndex + 1, scheme.resource[i].slot[j])
-                    if transposer.getSlotStackSize(sides.front, nowIndex + 1) == 0 then
-                        nowIndex = nowIndex + 1
-                    end
-                    break
+local function checkItemCount(runningTable)
+    for i = 1, #runningTable, 1 do
+        print("第" .. i .. "个")
+        print(database.reactorChambers[i])
+        local rc = database.reactorChambers[runningTable[i]]
+        print("输入箱：" .. rc.inputSide)
+        local inputBox = component.proxy(rc.transforAddr).getAllStacks(rc.inputSide).getAll()
+        local resource = config.scheme[rc.scheme].resource
+        for j = 1, #resource, 1 do
+            local num = 0
+            for index, item in pairs(inputBox) do
+                if item.name and item.name == resource[j].name then
+                    num = num + item.size
                 end
-                nowIndex = nowIndex + 1
+
+                if num >= resource[j].count then break end
+            end
+            if num < resource[j].count then
+                print(rc.reactorChamberAddr .. "所需的材料:" .. resource[j].name .. "小于" .. resource[j].count)
+                os.exit(0)
             end
         end
     end
@@ -43,6 +31,10 @@ local function stopReactorChamberByRc(rc)
     local redstone = component.proxy(rc.switchRedstone)
     rc.running = false
     redstone.setOutput(rc.reactorChamberSide, 0)
+    -- 确保反应堆先停机再继续运行
+    repeat
+        local singal = redstone.getOutput(rc.reactorChamberSide)
+    until (singal == 0)
 end
 
 local function stopAllReactorChamber()
@@ -68,7 +60,7 @@ local function insert(transforAddr, sourceSide, targetSlot, outputSide, name, dm
         local sourceBox = transposer.getAllStacks(sourceSide).getAll()
         for index, item in pairs(sourceBox) do
             if item.name == name and (dmg == -1 or item.damage < dmg) then
-                local insertCount = transposer.transferItem(sourceBox, outputSide, 1, index + 1, targetSlot)
+                local insertCount = transposer.transferItem(sourceSide, outputSide, 1, index + 1, targetSlot)
                 if insertCount > 0 then
                     return
                 end
@@ -78,6 +70,37 @@ local function insert(transforAddr, sourceSide, targetSlot, outputSide, name, dm
         os.sleep(1)
     end
 end
+
+-- 向核电仓中转移原材料
+local function insertItemsIntoReactorChamber(runningTable)
+    checkItemCount(runningTable)
+    for i = 1, #runningTable, 1 do
+        local rc = database.reactorChambers[runningTable[i]]
+        local transposer = component.proxy(rc.transforAddr)
+        local sourceBoxitemList = transposer.getAllStacks(rc.inputSide).getAll()
+        local resource = config.scheme[rc.scheme].resource
+
+        for i = 1, #resource do
+            local nowIndex = 0
+            -- pairs性能比#table性能差，由于此处需要多层循环遍历,故使用numeric for
+            for j = 1, #resource[i].slot, 1 do
+                while nowIndex < #sourceBoxitemList do
+                    local item = sourceBoxitemList[nowIndex]
+                    if item.name == resource[i].name then
+                        transposer.transferItem(rc.inputSide, rc.reactorChamberSide, 1, nowIndex + 1, resource[i].slot
+                            [j])
+                        if transposer.getSlotStackSize(rc.inputSide, nowIndex + 1) == 0 then
+                            nowIndex = nowIndex + 1
+                        end
+                        break
+                    end
+                    nowIndex = nowIndex + 1
+                end
+            end
+        end
+    end
+end
+
 ---移出{transforAddr}在{rcSide}方向上的第{targetSlot}的物品到{outputSide}容器中,并将耐久阈值小于{dmg}的{itemName}放入{targetSlot}
 ---@param transforAddr string
 ---@param sourceSide integer
@@ -103,14 +126,14 @@ local function checkItemChangeName(cfgResource, rc)
                 rc.reactorChamberSide,
                 rc.inputSide,
                 boxSlot,
-                rc.outputSide,
+                rc.changeItemOutputSide,
                 cfgResource.name, -1)
             goto continue
         end
         -- 是否为空位
         if rcBox[boxSlot - 1].name == nil then
             stopReactorChamberByRc(rc)
-            insert(rc.transforAddr, rc.inputSide, boxSlot, rc.reactorChamberSide, cfgResource.name)
+            insert(rc.transforAddr, rc.inputSide, boxSlot, rc.reactorChamberSide, cfgResource.name, -1)
         end
         ::continue::
     end
@@ -133,7 +156,7 @@ local function checkItemDmg(cfgResource, rc)
         -- 是否为空位
         if rcBox[boxSlot - 1].damage == nil then
             stopReactorChamberByRc(rc)
-            insert(rc.transforAddr, rc.inputSide, boxSlot, rc.reactorChamberSide, cfgResource.name)
+            insert(rc.transforAddr, rc.inputSide, boxSlot, rc.reactorChamberSide, cfgResource.name, -1)
         end
         ::continue::
     end
@@ -156,10 +179,10 @@ local function checkReactorChamberDMG(rc, scheme)
 end
 
 local function doHeatDissipation(rc, scheme)
-    local transposer = component(rc.transforAddr)
-    local rcComponent = component(rc.reactorChamberAddr)
+    local transposer = component.proxy(rc.transforAddr)
+    local rcComponent = component.proxy(rc.reactorChamberAddr)
     while true do
-        local rcBox = transposer.getAllStacks(rc.reactorChamberAddr).getAll()
+        local rcBox = transposer.getAllStacks(rc.reactorChamberSide).getAll()
         local targetInex = -1
         for index, item in pairs(rcBox) do
             if item.name == nil then

@@ -1,19 +1,8 @@
 local database = require("database")
-local event = require("event")
-local config = require("config")
 local action = require("action")
 local thread = require("thread")
 local detection = require("coolantcellThread")
 
-local function configSelect()
-    print("请输入要启用的模式:")
-    local scheme = io.read()
-    if config.scheme[scheme] then
-        return config.scheme[scheme]
-    end
-    print("配置文件中未找到该模式")
-    os.exit(0)
-end
 
 local function reactorChamberStart(rcTable)
     os.execute("cls")
