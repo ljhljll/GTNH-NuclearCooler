@@ -54,7 +54,9 @@ return {
             scheme = "slyb",
             -- 预热堆温,默认-1不开启,用于99%堆核电(填9900)
             thresholdHeat = 9900,
-            -- 核电仓方向(对于红石端口来说)
+            -- 核电仓地址
+            reactorChamberAddr = "",
+            -- 核电仓方向
             reactorChamberSide = 3,
             -- 开关核电的红石端口地址
             switchRedstone = "",
@@ -65,24 +67,21 @@ return {
             -- 输出低耐久冷却单元的箱子位置(对转运器来说,例如填4则箱子需要在转运器的右边(west方向))
             outputSide = 4,
             -- 输出枯竭燃料棒的箱子位置(对转运器来说,例如填0则箱子需要在转运器的下边
-            changeItemOutputSide = 0
+            changeItemOutputSide = 0,
+            -- 用于存放散热组件的箱子(也用作临时存储)
+            tempSide = 1
         },
         {
             scheme = "slyb",
-            -- 预热堆温,默认-1不开启,用于99%堆核电(填9900)
             thresholdHeat = -1,
-            -- 核电仓方向(对于红石端口来说)
+            reactorChamberAddr = "",
             reactorChamberSide = 3,
-            -- 开关核电的红石端口地址
             switchRedstone = "",
-            -- 转运器地址
             transforAddr = "",
-            -- 输入原材料的箱子位置(对转运器来说,例如填5则箱子需要在转运器的左边(east方向))
             inputSide = 5,
-            -- 输出低耐久冷却单元的箱子位置(对转运器来说,例如填4则箱子需要在转运器的右边(west方向))
             outputSide = 4,
-            -- 输出枯竭燃料棒的箱子位置(对转运器来说,例如填0则箱子需要在转运器的下边
-            changeItemOutputSide = 0
+            changeItemOutputSide = 0,
+            tempSide = 1
         }
     }
 }

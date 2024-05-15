@@ -15,47 +15,38 @@ local function configSelect()
     os.exit(0)
 end
 
-local function reactorChamberStart(scheme)
+local function reactorChamberStart(rcTable)
     os.execute("cls")
     local threads = {}
 
-    for index, rc in pairs(database.reactorChambers) do
-        if not rc.running then
-            goto continue
-        end
-        threads[index] = thread.create(detection.runningReactorChamber, rc, scheme)
-        ::continue::
+    for i = 1, #rcTable do
+        threads[i] = thread.create(detection.runningReactorChamber, database.reactorChambers[rcTable[i]])
     end
-    event.onError()
     thread.waitForAll(threads)
     action.stopAllReactorChamber()
     print("核反应堆已关闭")
 end
+
 local function justStart()
-    local scheme = configSelect()
-    print("请输入启动几连核电:")
-    local chamberNumber = tonumber(io.read())
-    local flag = database.setOpenNum(chamberNumber)
+    print("(0)直接启动 (1)通过配置启动 (-1)退出")
+    local model = io.read()
 
-    if not flag then
-        print("启动核电个数错误")
-        os.exit(0)
+    if model == "-1" then return end
+
+    print("请输入启用的配置(从1开始以空格分割，顺序对应config.lua配置):")
+    local choicesNum = io.read()
+    local runningTable = {}
+    for index in choicesNum:gmatch("%d+") do
+        table.insert(runningTable, tonumber(index))
     end
 
-    local runningNumber = 0
-    for index, rc in pairs(database.reactorChambers) do
-        if runningNumber == chamberNumber then
-            break
-        end
-        runningNumber = runningNumber + 1
-        rc.running = true
+    if model == "1" then
+        action.insertItemsIntoReactorChamber(runningTable)
     end
-
-    reactorChamberStart(scheme)
+    reactorChamberStart(runningTable)
 end
 
 local function init()
-    database.scanReactorRedstone()
     if not database.getGlobalRedstone then
         print("未开启全局开关")
         action.stopAllReactorChamber()

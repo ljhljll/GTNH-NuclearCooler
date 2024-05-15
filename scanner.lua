@@ -1,7 +1,7 @@
 local database = require("database")
 local action = require("action")
 
-local function scanSchame(scheme)
+local function scanSchame(preConfig)
     while true do
         local enoughOk = 0
         for i = 1, #scheme.resource, 1 do

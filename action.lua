@@ -1,5 +1,4 @@
 local component = require("component")
-local transposer = component.transposer
 local sides = require("sides")
 local database = require("database")
 local config = require("config")
@@ -18,12 +17,12 @@ local function checkItemCount(itemName, count)
 end
 
 -- 向核电仓中转移原材料
-local function insertItemsIntoReactorChamber(scheme, rc)
+local function insertItemsIntoReactorChamber(runningTable)
     local sourceBoxitemList = transposer.getAllStacks(sides.front).getAll()
 
     for i = 1, #scheme.resource do
         local nowIndex = 0
-        -- pairs性能比#table性能差，由于此处需要循环遍历,故使用#
+        -- pairs性能比#table性能差，由于此处需要多层循环遍历,故使用numeric for
         for j = 1, #scheme.resource[i].slot, 1 do
             while nowIndex < #sourceBoxitemList do
                 local item = sourceBoxitemList[nowIndex]
@@ -41,12 +40,9 @@ local function insertItemsIntoReactorChamber(scheme, rc)
 end
 
 local function stopReactorChamberByRc(rc)
+    local redstone = component.proxy(rc.switchRedstone)
     rc.running = false
-    database.getControlRedstone().setOutput(rc.side, 0)
-end
-
-local function stopReactorChamberBySides(side)
-    database.getControlRedstone().setOutput(side, 0)
+    redstone.setOutput(rc.reactorChamberSide, 0)
 end
 
 local function stopAllReactorChamber()
@@ -55,9 +51,10 @@ local function stopAllReactorChamber()
     end
 end
 
-local function remove(side, slot)
+local function remove(transforAddr, sourceSide, slot, outpuSide)
+    local transposer = component.proxy(transforAddr)
     repeat
-        local removeCount = transposer.transferItem(side, sides.front, 1, slot)
+        local removeCount = transposer.transferItem(sourceSide, outpuSide, 1, slot)
         if removeCount == 0 then
             print("箱子已满,无法输出物品")
             os.sleep(1)
@@ -65,12 +62,13 @@ local function remove(side, slot)
     until (removeCount > 0)
 end
 
-local function insert(side, slot, name, dmg)
+local function insert(transforAddr, sourceSide, targetSlot, outputSide, name, dmg)
+    local transposer = component.proxy(transforAddr)
     while true do
-        local sourceBox = transposer.getAllStacks(sides.front).getAll()
+        local sourceBox = transposer.getAllStacks(sourceSide).getAll()
         for index, item in pairs(sourceBox) do
-            if item.name == name and (dmg == nil or item.damage < dmg) then
-                local insertCount = transposer.transferItem(sides.front, side, 1, index + 1, slot)
+            if item.name == name and (dmg == -1 or item.damage < dmg) then
+                local insertCount = transposer.transferItem(sourceBox, outputSide, 1, index + 1, targetSlot)
                 if insertCount > 0 then
                     return
                 end
@@ -80,71 +78,88 @@ local function insert(side, slot, name, dmg)
         os.sleep(1)
     end
 end
-
-local function removeAndInsert(rcSide, targetSlot, itemName, dmg)
-    remove(rcSide, targetSlot)
-    insert(rcSide, targetSlot, itemName, dmg)
+---移出{transforAddr}在{rcSide}方向上的第{targetSlot}的物品到{outputSide}容器中,并将耐久阈值小于{dmg}的{itemName}放入{targetSlot}
+---@param transforAddr string
+---@param sourceSide integer
+---@param targetSlot integer
+---@param outputSide integer
+---@param itemName string
+---@param dmg integer
+local function removeAndInsert(transforAddr, rcSide, sourceSide, targetSlot, outputSide, itemName, dmg)
+    remove(transforAddr, rcSide, targetSlot, outputSide)
+    insert(transforAddr, sourceSide, targetSlot, rcSide, itemName, dmg)
 end
 
-local function checkItemChangeName(rcBox, cfgResource, rc)
+local function checkItemChangeName(cfgResource, rc)
+    local transposer = component.proxy(rc.transforAddr)
+    local rcBox = transposer.getAllStacks(rc.reactorChamberSide).getAll()
     for i = 1, #cfgResource.slot, 1 do
         local boxSlot = cfgResource.slot[i]
         -- 名称已变化
         if rcBox[boxSlot - 1].name ~= cfgResource.name
             and rcBox[boxSlot - 1].name == cfgResource.changeName then
             stopReactorChamberByRc(rc)
-            removeAndInsert(rc.side, boxSlot, cfgResource.name)
+            removeAndInsert(rc.transforAddr,
+                rc.reactorChamberSide,
+                rc.inputSide,
+                boxSlot,
+                rc.outputSide,
+                cfgResource.name, -1)
             goto continue
         end
         -- 是否为空位
         if rcBox[boxSlot - 1].name == nil then
             stopReactorChamberByRc(rc)
-            insert(rc.side, boxSlot, cfgResource.name)
+            insert(rc.transforAddr, rc.inputSide, boxSlot, rc.reactorChamberSide, cfgResource.name)
         end
         ::continue::
     end
 end
 
-local function checkItemDmg(rcBox, cfgResource, rc)
+local function checkItemDmg(cfgResource, rc)
+    local transposer = component.proxy(rc.transforAddr)
+    local rcBox = transposer.getAllStacks(rc.reactorChamberSide).getAll()
     for i = 1, #cfgResource.slot, 1 do
         local boxSlot = cfgResource.slot[i]
         -- 耐久是否达到阈值
         if rcBox[boxSlot - 1].damage ~= nil then
             if rcBox[boxSlot - 1].damage >= cfgResource.dmg then
                 stopReactorChamberByRc(rc)
-                removeAndInsert(rc.side, boxSlot, cfgResource.name, cfgResource.dmg)
+                removeAndInsert(rc.transforAddr, rc.reactorChamberSide, rc.inputSide, boxSlot, rc.outputSide,
+                    cfgResource.name, cfgResource.dmg)
                 goto continue
             end
         end
         -- 是否为空位
         if rcBox[boxSlot - 1].damage == nil then
             stopReactorChamberByRc(rc)
-            insert(rc.side, boxSlot, cfgResource.name)
+            insert(rc.transforAddr, rc.inputSide, boxSlot, rc.reactorChamberSide, cfgResource.name)
         end
         ::continue::
     end
 end
 
 local function checkReactorChamberDMG(rc, scheme)
-    local rcBox = transposer.getAllStacks(rc.side).getAll()
     for i = 1, #scheme.resource do
         -- 检测耐久
         if scheme.resource[i].dmg ~= -1 then
-            checkItemDmg(rcBox, scheme.resource[i], rc)
+            checkItemDmg(scheme.resource[i], rc)
             goto continue
         end
         -- 检测替换物
         if scheme.resource[i].changeName ~= -1 then
-            checkItemChangeName(rcBox, scheme.resource[i], rc)
+            checkItemChangeName(scheme.resource[i], rc)
         end
 
         ::continue::
     end
 end
 
-local function doHeatDissipation(side, rcAddress, scheme)
+local function doHeatDissipation(rc, scheme)
+    local transposer = component(rc.transforAddr)
+    local rcComponent = component(rc.reactorChamberAddr)
     while true do
-        local rcBox = transposer.getAllStacks(side).getAll()
+        local rcBox = transposer.getAllStacks(rc.reactorChamberAddr).getAll()
         local targetInex = -1
         for index, item in pairs(rcBox) do
             if item.name == nil then
@@ -154,7 +169,8 @@ local function doHeatDissipation(side, rcAddress, scheme)
 
             if item.name == scheme.insurance.changeName and item.damage <= scheme.insurance.dmg then
                 targetInex = index + 1
-                remove(side, targetInex)
+                -- 将可用于替换的组件放入临时箱,为散热组件空出位置
+                remove(rc.transforAddr, rc.reactorChamberSide, targetInex, rc.tempSide)
                 break;
             end
         end
@@ -162,15 +178,17 @@ local function doHeatDissipation(side, rcAddress, scheme)
         if targetInex == -1 then
             goto continue
         end
-
-        insert(side, targetInex, scheme.insurance.name)
+        -- 放入符合指定耐久的散热组件
+        insert(rc.transforAddr, rc.tempSide, targetInex, rc.reactorChamberSide, scheme.insurance.name,
+            scheme.insurance.dmg)
         repeat
-            local heat = component.proxy(rcAddress).getHeat()
-            print("堆散热中:" .. rcAddress .. ",方向:" .. side .. "Heat =" .. heat)
+            local heat = rcComponent.getHeat()
+            print("堆散热中:" .. rc.reactorChamberAddr .. ",方向:" .. rc.reactorChamberSide .. "Heat =" .. heat)
             os.sleep(1)
         until (heat == 0)
-
-        removeAndInsert(side, targetInex, scheme.insurance.changeName)
+        -- 将临时箱中的替换组件放回去
+        removeAndInsert(rc.transforAddr, rc.reactorChamberSide, rc.tempSide, targetInex, rc.tempSide,
+            scheme.insurance.changeName, -1)
         do return end
         ::continue::
         print("[散热]未找到空位或可替换的组件:" .. scheme.insurance.changeName)
@@ -179,22 +197,24 @@ local function doHeatDissipation(side, rcAddress, scheme)
 end
 
 local function checkReactorChamberHeat(rc, scheme)
-    local heat = component.proxy(rc.address).getHeat()
+    local heat = component.proxy(rc.reactorChamberAddr).getHeat()
     if heat >= config.dangerHeat then
         stopReactorChamberByRc(rc)
-        print("堆:" .. rc.address .. ",方向:" .. rc.side .. "Heat >=" .. config.dangerHeat)
-        doHeatDissipation(rc.side, rc.address, scheme)
+        print("堆:" .. rc.reactorChamberAddr .. ",方向:" .. rc.reactorChamberSide .. "Heat >=" .. config.dangerHeat)
+        doHeatDissipation(rc, scheme)
     end
 end
+
 local function startReactorChamber(rc)
     rc.running = true
-    database.getControlRedstone().setOutput(rc.side, 15)
+    local rcRedstone = component.proxy(rc.switchRedstone)
+    rcRedstone.setOutput(rc.reactorChamberSide, 15)
 end
+
 return {
     checkItemCount = checkItemCount,
     insertItemsIntoReactorChamber = insertItemsIntoReactorChamber,
     stopAllReactorChamber = stopAllReactorChamber,
-    stopReactorChamberBySides = stopReactorChamberBySides,
     checkReactorChamberDMG = checkReactorChamberDMG,
     checkReactorChamberHeat = checkReactorChamberHeat,
     startReactorChamber = startReactorChamber,
