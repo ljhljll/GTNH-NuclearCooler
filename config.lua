@@ -1,6 +1,9 @@
 return {
+    -- 核电模式
     scheme = {
+        -- 模式名(slyb)
         slyb = {
+            -- 所使用到的资源
             resource = {
                 {
                     name = "gregtech:gt.360k_Helium_Coolantcell",
@@ -28,11 +31,58 @@ return {
             }
         }
     },
-    -- 是否开启电量锁存器(提供一个红石端口,向该端口开启红石信号后开启核电)
-    energyLatch = false,
-    -- 电量锁存器红石端口的地址
-    energyLatchRedstone = "",
+    --[[
+     是否开启电量控制(提供一个红石端口,向该端口开启红石信号后开启核电)
+     填入电量控制红石端口的地址,默认不启用
+    --]]
+    energyLatchRedstone = -1,
     globalRedstone = "03e7f8b7-2048-437f-80f1-d5dbd5b5787a",
     -- 当核反应堆达到该热度时,需使用散热组件进行散热,反应堆默认热容为10000
-    dangerHeat = 100
+    dangerHeat = 100,
+    --[[
+    核电堆配置,可同时配置多台核电并在启动时自己选择开启哪几台,例如下边有2个核电配置，输入1 2即可开两台,只输入2则只启动第二个配置的核电
+    方向取值可开启f3来看当前的朝向:
+    底面: 0 对应方向:down、negy
+    顶面: 1 对应方向:up、posy
+    背面: 2 对应方向:north、negz
+    前面: 3 对应方向:south、posz、forward
+    右面: 4 对应方向:west、negx
+    左面: 5 对应方向:east、posx
+    --]]
+    reactorChamberList = {
+        {
+            scheme = "slyb",
+            -- 预热堆温,默认-1不开启,用于99%堆核电(填9900)
+            thresholdHeat = 9900,
+            -- 核电仓方向(对于红石端口来说)
+            reactorChamberSide = 3,
+            -- 开关核电的红石端口地址
+            switchRedstone = "",
+            -- 转运器地址
+            transforAddr = "",
+            -- 输入原材料的箱子位置(对转运器来说,例如填5则箱子需要在转运器的左边(east方向))
+            inputSide = 5,
+            -- 输出低耐久冷却单元的箱子位置(对转运器来说,例如填4则箱子需要在转运器的右边(west方向))
+            outputSide = 4,
+            -- 输出枯竭燃料棒的箱子位置(对转运器来说,例如填0则箱子需要在转运器的下边
+            changeItemOutputSide = 0
+        },
+        {
+            scheme = "slyb",
+            -- 预热堆温,默认-1不开启,用于99%堆核电(填9900)
+            thresholdHeat = -1,
+            -- 核电仓方向(对于红石端口来说)
+            reactorChamberSide = 3,
+            -- 开关核电的红石端口地址
+            switchRedstone = "",
+            -- 转运器地址
+            transforAddr = "",
+            -- 输入原材料的箱子位置(对转运器来说,例如填5则箱子需要在转运器的左边(east方向))
+            inputSide = 5,
+            -- 输出低耐久冷却单元的箱子位置(对转运器来说,例如填4则箱子需要在转运器的右边(west方向))
+            outputSide = 4,
+            -- 输出枯竭燃料棒的箱子位置(对转运器来说,例如填0则箱子需要在转运器的下边
+            changeItemOutputSide = 0
+        }
+    }
 }
