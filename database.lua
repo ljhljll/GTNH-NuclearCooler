@@ -22,31 +22,6 @@ local function getGlobalRedstone()
     return false
 end
 
-local function scanDrawer(rc)
-    local drawer = component.proxy(rc.drawerAddress)
-    local drawerSlotSize = drawer.getDrawerCount()
-    local scheme = config.scheme[rc.scheme]
-    local result = {}
-    for i = 1, #scheme.resource, 1 do
-        local slots = {}
-        for j = 1, drawerSlotSize, 1 do
-            if drawer.getItemName(j) == scheme.resource[i].name then
-                table.insert(slots, j)
-            end
-        end
-        result[scheme.resource[i].name] = slots
-    end
-
-    -- 针对散热组件做的兼容(现在的代码已经严格控制红石信号，可以说用不上散热,但以防万一呢)
-    for i = 1, drawerSlotSize, 1 do
-        if drawer.getItemName(i) == scheme.insurance.name then
-            result[scheme.insurance.name] = { i }
-            break
-        end
-    end
-    return result
-end
-
 
 local function scanAdator()
     local reactorChamberList = config.reactorChamberList
@@ -54,7 +29,6 @@ local function scanAdator()
     for i = 1, #reactorChamberList, 1 do
         reactorChambers[i] = reactorChamberList[i]
         reactorChambers[i].running = false
-        reactorChambers[i].drawer = scanDrawer(reactorChamberList[i])
         print("配置" .. i .. "使用模式:" .. reactorChambers[i].scheme .. "预热堆温:" .. reactorChambers[i].thresholdHeat)
     end
 end

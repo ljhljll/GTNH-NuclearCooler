@@ -7,11 +7,11 @@ local detection = require("coolantcellThread")
 local function reactorChamberStart(rcTable)
     os.execute("cls")
     local threads = {}
-    detection.runningReactorChamber(database.reactorChambers[rcTable[1]])
-    --for i = 1, #rcTable do
-    --threads[i] = thread.create(detection.runningReactorChamber, database.--reactorChambers[rcTable[i]])
-    --end
-    --thread.waitForAll(threads)
+
+    for i = 1, #rcTable do
+        threads[i] = thread.create(detection.runningReactorChamber, database.reactorChambers[rcTable[i]])
+    end
+    thread.waitForAll(threads)
     action.stopAllReactorChamber()
     print("核反应堆已关闭")
 end
@@ -31,7 +31,6 @@ local function justStart()
 
     if model == "1" then
         action.insertItemsIntoReactorChamber(runningTable)
-        os.exit(0)
     end
     reactorChamberStart(runningTable)
 end
