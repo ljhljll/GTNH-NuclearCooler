@@ -4,10 +4,7 @@ local config = require("config")
 
 local function checkItemCount(runningTable)
     for i = 1, #runningTable, 1 do
-        print("第" .. i .. "个")
-        print(database.reactorChambers[i])
         local rc = database.reactorChambers[runningTable[i]]
-        print("输入箱：" .. rc.inputSide)
         local inputBox = component.proxy(rc.transforAddr).getAllStacks(rc.inputSide).getAll()
         local resource = config.scheme[rc.scheme].resource
         for j = 1, #resource, 1 do
