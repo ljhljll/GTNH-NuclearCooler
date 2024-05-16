@@ -6,15 +6,15 @@ return {
             -- 所使用到的资源
             resource = {
                 {
-                    name = "gregtech:gt.360k_Helium_Coolantcell",
+                    name = "gt.360k_Helium_Coolantcell",
                     changeName = -1,
                     dmg = 90,
                     count = 14,
                     slot = { 3, 6, 9, 10, 15, 22, 26, 29, 33, 40, 45, 46, 49, 52 }
                 },
                 {
-                    name = "gregtech:gt.reactorUraniumQuad",
-                    changeName = "IC2:reactorUraniumQuaddepleted",
+                    name = "gt.reactorUraniumQuad",
+                    changeName = "ic2.reactorUraniumQuaddepleted",
                     dmg = -1,
                     count = 40,
                     slot = {
@@ -24,8 +24,8 @@ return {
             },
             --- 用于散热的组件 name:散热物品名  changeName: 临时用于替换的元件
             insurance = {
-                name = "IC2:reactorVentGold",
-                changeName = "gregtech:gt.360k_Helium_Coolantcell",
+                name = "ic2.reactorVentGold",
+                changeName = "gt.360k_Helium_Coolantcell",
                 -- 散热组件的耐久要求(根据散热组件可承受的热熔来，例如超频散热片的热熔为10000)，只有小于该值的散热片会被使用
                 dmg = 3000
             }
@@ -35,8 +35,8 @@ return {
      是否开启电量控制(提供一个红石端口,向该端口开启红石信号后开启核电)
      填入电量控制红石端口的地址,默认不启用
     --]]
-    energyLatchRedstone = "e2cc042c-8f70-4cdf-9884-bf91e2f9f2d3",
-    globalRedstone = "a6f9f32d-2c8a-4b9e-8d07-0db6683d5939",
+    energyLatchRedstone = -1,
+    globalRedstone = "69ffa4d5-1e0d-40dc-b5b6-cd9a288b6ba8",
     -- 当核反应堆达到该热度时,需使用散热组件进行散热,反应堆默认热容为10000
     dangerHeat = 100,
     --[[
@@ -55,33 +55,61 @@ return {
             -- 预热堆温,默认-1不开启,用于99%堆核电(填9900)
             thresholdHeat = -1,
             -- 核电仓地址
-            reactorChamberAddr = "de50faf3-f2c7-4fa0-80dc-5ef42d5acabe",
+            reactorChamberAddr = "348a414a-d8de-4535-a1c9-6e063e9aca73",
             -- 核电仓方向
-            reactorChamberSide = 2,
+            reactorChamberSide = 4,
             -- 开关核电的红石端口地址
-            switchRedstone = "4a10bd62-ceea-40ca-8058-63985c39e4f6",
+            switchRedstone = "82427642-f660-4cca-96ff-70d0a0882f18",
             -- 转运器地址
-            transforAddr = "fac41e7c-475a-4daa-841a-37c43d9b5cb5",
+            transforAddr = "f7c2f6e4-55fd-474d-953d-784e50cb2f91",
             -- 输入原材料的箱子位置(对转运器来说,例如填5则箱子需要在转运器的左边(east方向))
-            inputSide = 4,
+            inputSide = 3,
             -- 输出低耐久冷却单元的箱子位置(对转运器来说,例如填4则箱子需要在转运器的右边(west方向))
-            outputSide = 5,
+            outputSide = 3,
             -- 输出枯竭燃料棒的箱子位置(对转运器来说,例如填0则箱子需要在转运器的下边
-            changeItemOutputSide = 0,
+            changeItemOutputSide = 3,
             -- 用于存放散热组件的箱子(也用作临时存储)
-            tempSide = 1
+            tempSide = 3,
+            drawerAddress = "57370d67-76a6-4321-9ed6-fba936c1295a"
         },
         {
             scheme = "slyb",
             thresholdHeat = -1,
-            reactorChamberAddr = "c3725cc1-13ad-42b9-a98a-2ff576bb7086",
-            reactorChamberSide = 2,
-            switchRedstone = "5a46748c-30a9-41fe-b2fe-a921affe730a",
-            transforAddr = "d226e5fa-ce0f-4601-b2c1-ce5c94b37e41",
-            inputSide = 4,
-            outputSide = 5,
-            changeItemOutputSide = 0,
-            tempSide = 1
+            reactorChamberAddr = "cf13a2a7-255b-424d-b37d-f2f73ada603a",
+            reactorChamberSide = 0,
+            switchRedstone = "82427642-f660-4cca-96ff-70d0a0882f18",
+            transforAddr = "f7c2f6e4-55fd-474d-953d-784e50cb2f91",
+            inputSide = 3,
+            outputSide = 3,
+            changeItemOutputSide = 3,
+            tempSide = 3,
+            drawerAddress = "57370d67-76a6-4321-9ed6-fba936c1295a"
+        },
+        {
+            scheme = "slyb",
+            thresholdHeat = -1,
+            reactorChamberAddr = "7be7eb0d-14f9-4ddb-b30b-abc4bc07a48a",
+            reactorChamberSide = 5,
+            switchRedstone = "82427642-f660-4cca-96ff-70d0a0882f18",
+            transforAddr = "f7c2f6e4-55fd-474d-953d-784e50cb2f91",
+            inputSide = 3,
+            outputSide = 3,
+            changeItemOutputSide = 3,
+            tempSide = 3,
+            drawerAddress = "57370d67-76a6-4321-9ed6-fba936c1295a"
+        },
+        {
+            scheme = "slyb",
+            thresholdHeat = -1,
+            reactorChamberAddr = "ff3292b2-93db-4805-8bdd-dd3fc8f423aa",
+            reactorChamberSide = 1,
+            switchRedstone = "82427642-f660-4cca-96ff-70d0a0882f18",
+            transforAddr = "f7c2f6e4-55fd-474d-953d-784e50cb2f91",
+            inputSide = 3,
+            outputSide = 3,
+            changeItemOutputSide = 3,
+            tempSide = 3,
+            drawerAddress = "57370d67-76a6-4321-9ed6-fba936c1295a"
         }
     }
 }
