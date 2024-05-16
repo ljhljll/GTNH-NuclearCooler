@@ -37,9 +37,7 @@ local function runningReactorChamber(rc)
             local scheme = config.scheme[rc.scheme]
             action.checkReactorChamberDMG(rc, scheme)
             action.checkReactorChamberHeat(rc, scheme)
-            --if rc.thresholdHeat == -1 then
-            --action.startReactorChamber(rc)
-            --end
+            action.startReactorChamber(rc)
         end
         os.sleep(0.5)
     end
