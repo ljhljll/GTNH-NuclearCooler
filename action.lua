@@ -79,12 +79,12 @@ end
 local function preheatRc(rc)
     local rcComponent = component.proxy(rc.reactorChamberAddr)
     if rcComponent.getHeat() >= rc.thresholdHeat then return true end
-
-    local transfor = component.proxy(rc.tempSide)
     insert(rc.transforAddr, rc.tempSide, 1, rc.reactorChamberSide, rc.preheatItem, -1)
+    startReactorChamber(rc)
     repeat
         local heat = rcComponent.getHeat()
     until (heat >= rc.thresholdHeat)
+    stopReactorChamberByRc(rc)
     remove(rc.transforAddr, rc.reactorChamberSide, 1, rc.tempSide)
 end
 
