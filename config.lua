@@ -23,6 +23,7 @@ return {
                 }
             },
             --- 用于散热的组件 name:散热物品名  changeName: 临时用于替换的元件
+            --- 该配置即将被删除，可以先不动
             insurance = {
                 name = "ic2.reactorVentGold",
                 changeName = "gt.360k_Helium_Coolantcell",
