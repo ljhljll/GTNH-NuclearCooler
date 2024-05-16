@@ -17,9 +17,6 @@ end
 
 local function runningReactorChamber(rc)
     print(rc.reactorChamberAddr .. " is running")
-    if rc.thresholdHeat ~= -1 then
-        action.preheatRc(rc)
-    end
     while true do
         if not database.getGlobalRedstone() then
             rc.running = false

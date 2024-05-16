@@ -70,6 +70,24 @@ local function insert(transforAddr, sourceSide, targetSlot, outputSide, name, dm
     end
 end
 
+local function startReactorChamber(rc)
+    rc.running = true
+    local rcRedstone = component.proxy(rc.switchRedstone)
+    rcRedstone.setOutput(rc.reactorChamberSide, 15)
+end
+
+local function preheatRc(rc)
+    local rcComponent = component.proxy(rc.reactorChamberAddr)
+    if rcComponent.getHeat() >= rc.thresholdHeat then return true end
+
+    local transfor = component.proxy(rc.tempSide)
+    insert(rc.transforAddr, rc.tempSide, 1, rc.reactorChamberSide, rc.preheatItem, -1)
+    repeat
+        local heat = rcComponent.getHeat()
+    until (heat >= rc.thresholdHeat)
+    remove(rc.transforAddr, rc.reactorChamberSide, 1, rc.tempSide)
+end
+
 -- 向核电仓中转移原材料
 local function insertItemsIntoReactorChamber(runningTable)
     checkItemCount(runningTable)
@@ -78,6 +96,11 @@ local function insertItemsIntoReactorChamber(runningTable)
         local transposer = component.proxy(rc.transforAddr)
         local sourceBoxitemList = transposer.getAllStacks(rc.inputSide).getAll()
         local resource = config.scheme[rc.scheme].resource
+
+        if rc.thresholdHeat ~= -1 then
+            preheatRc(rc)
+            print(rc.reactorChamberAddr .. " 预热完成")
+        end
 
         for i = 1, #resource do
             local nowIndex = 0
@@ -177,11 +200,6 @@ local function checkReactorChamberDMG(rc, scheme)
     end
 end
 
-local function startReactorChamber(rc)
-    rc.running = true
-    local rcRedstone = component.proxy(rc.switchRedstone)
-    rcRedstone.setOutput(rc.reactorChamberSide, 15)
-end
 
 return {
     checkItemCount = checkItemCount,
@@ -189,5 +207,6 @@ return {
     stopAllReactorChamber = stopAllReactorChamber,
     checkReactorChamberDMG = checkReactorChamberDMG,
     startReactorChamber = startReactorChamber,
-    stopReactorChamberByRc = stopReactorChamberByRc
+    stopReactorChamberByRc = stopReactorChamberByRc,
+    preheatRc = preheatRc
 }
