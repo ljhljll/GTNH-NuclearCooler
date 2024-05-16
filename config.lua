@@ -22,13 +22,34 @@ return {
                         38, 39, 41, 42, 43, 44, 47, 48, 50, 51, 53, 54 }
                 }
             }
+        },
+        mox = {
+            resource = {
+                {
+                    name = "gregtech:gt.1080k_Space_Coolantcell",
+                    changeName = -1,
+                    dmg = 90,
+                    count = 14,
+                    slot = { 3, 6, 9, 10, 15, 22, 26, 29, 33, 40, 45, 46, 49, 52 }
+                },
+                {
+                    name = "GoodGenerator:rodCompressedPlutonium4",
+                    changeName = "GoodGenerator:rodCompressedPlutoniumDepleted4",
+                    dmg = -1,
+                    count = 40,
+                    slot = {
+                        1, 2, 4, 5, 7, 8, 11, 12, 13, 14, 16, 17, 18, 19, 20, 21, 23, 24, 25, 27, 28, 30, 31, 32, 34, 35, 36, 37,
+                        38, 39, 41, 42, 43, 44, 47, 48, 50, 51, 53, 54 }
+                }
+            }
         }
+
     },
     --[[
      是否开启电量控制(提供一个红石端口,向该端口开启红石信号后开启核电)
      填入电量控制红石端口的地址,默认不启用（-1)
     --]]
-    energyLatchRedstone = "e2cc042c-8f70-4cdf-9884-bf91e2f9f2d3",
+    energyLatchRedstone = -1,
     -- 全局红石开关地址(必填)
     globalRedstone = "a6f9f32d-2c8a-4b9e-8d07-0db6683d5939",
     --[[
@@ -44,39 +65,26 @@ return {
     reactorChamberList = {
         {
             -- 对应上面scheme里面的发电模式
-            scheme = "slyb",
+            scheme = "mox",
             -- 预热堆温,默认-1不开启,用于99%堆核电(填9900)
-            thresholdHeat = -1,
+            thresholdHeat = 9900,
             -- 用于预热反应堆的燃料名
             preheatItem = "gregtech:gt.reactorUraniumQuad",
             -- 核电仓地址
-            reactorChamberAddr = "de50faf3-f2c7-4fa0-80dc-5ef42d5acabe",
+            reactorChamberAddr = "0eeac2fa-47ea-4184-9193-0490da16e798",
             -- 核电仓方向
-            reactorChamberSide = 2,
+            reactorChamberSide = 4,
             -- 开关核电的红石端口地址
-            switchRedstone = "4a10bd62-ceea-40ca-8058-63985c39e4f6",
+            switchRedstone = "40bd75c8-ebfd-4725-8ed3-a7cbc1161c48",
             -- 转运器地址
-            transforAddr = "fac41e7c-475a-4daa-841a-37c43d9b5cb5",
+            transforAddr = "5d5a4b92-2e48-458d-893f-7fcfa545979f",
             -- 输入原材料的箱子位置(对转运器来说,例如填5则箱子需要在转运器的左边(east方向))
-            inputSide = 4,
+            inputSide = 3,
             -- 输出低耐久冷却单元的箱子位置(对转运器来说,例如填4则箱子需要在转运器的右边(west方向))
-            outputSide = 5,
+            outputSide = 2,
             -- 输出枯竭燃料棒的箱子位置(对转运器来说,例如填0则箱子需要在转运器的下边
             changeItemOutputSide = 0,
             -- 可自由扩展的箱子(目前用来存放用于99%堆加热的东西，可自由修改)
-            tempSide = 1
-        },
-        {
-            scheme = "slyb",
-            thresholdHeat = -1,
-            preheatItem = "gregtech:gt.reactorUraniumQuad",
-            reactorChamberAddr = "c3725cc1-13ad-42b9-a98a-2ff576bb7086",
-            reactorChamberSide = 2,
-            switchRedstone = "5a46748c-30a9-41fe-b2fe-a921affe730a",
-            transforAddr = "d226e5fa-ce0f-4601-b2c1-ce5c94b37e41",
-            inputSide = 4,
-            outputSide = 5,
-            changeItemOutputSide = 0,
             tempSide = 1
         }
     }
