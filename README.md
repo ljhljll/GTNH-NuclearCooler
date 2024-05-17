@@ -11,7 +11,7 @@
 
 ![多联核电](assets/多联核电.jpg)
 
-![多联核电](assets/mox99%堆.jpg)
+![mox99%核电](assets/mox99%堆.jpg)
 
 
 - [x] 删去无用的散热代码
