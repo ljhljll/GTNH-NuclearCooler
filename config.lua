@@ -86,6 +86,69 @@ return {
             changeItemOutputSide = 0,
             -- 可自由扩展的箱子(目前用来存放用于99%堆加热的东西，可自由修改)
             tempSide = 1
+        },
+        {
+            -- 对应上面scheme里面的发电模式
+            scheme = "slyb",
+            -- 预热堆温,默认-1不开启,用于99%堆核电(填9900)
+            thresholdHeat = -1,
+            -- 用于预热反应堆的燃料名
+            preheatItem = "gregtech:gt.reactorUraniumQuad",
+            -- 核电仓地址
+            reactorChamberAddr = "0d1da7b1-31e5-47f2-8efc-894f2bf3247f",
+            -- 核电仓方向
+            reactorChamberSide = 1,
+            -- 开关核电的红石端口地址
+            switchRedstone = "f7104a4f-ef19-478b-9267-cadb684b90dc",
+            -- 转运器地址
+            transforAddr = "d230cd59-116b-43fb-b81d-c2a6ff412517",
+            -- 输入原材料的箱子位置(对转运器来说,例如填5则箱子需要在转运器的左边(east方向))
+            inputSide = 3,
+            -- 输出低耐久冷却单元的箱子位置(对转运器来说,例如填4则箱子需要在转运器的右边(west方向))
+            outputSide = 3,
+            -- 输出枯竭燃料棒的箱子位置(对转运器来说,例如填0则箱子需要在转运器的下边
+            changeItemOutputSide = 3,
+            -- 可自由扩展的箱子(目前用来存放用于99%堆加热的东西，可自由修改)
+            tempSide = 3
+        },
+        {
+            scheme = "slyb",
+            thresholdHeat = -1,
+            preheatItem = "gregtech:gt.reactorUraniumQuad",
+            reactorChamberAddr = "afc56497-09a9-4bdf-a585-bb7e5cf06417",
+            reactorChamberSide = 4,
+            switchRedstone = "f7104a4f-ef19-478b-9267-cadb684b90dc",
+            transforAddr = "d230cd59-116b-43fb-b81d-c2a6ff412517",
+            inputSide = 3,
+            outputSide = 3,
+            changeItemOutputSide = 3,
+            tempSide = 3
+        },
+        {
+            scheme = "slyb",
+            thresholdHeat = -1,
+            preheatItem = "gregtech:gt.reactorUraniumQuad",
+            reactorChamberAddr = "3aa1f5d0-20fb-443c-9199-95afa3ca4443",
+            reactorChamberSide = 0,
+            switchRedstone = "f7104a4f-ef19-478b-9267-cadb684b90dc",
+            transforAddr = "d230cd59-116b-43fb-b81d-c2a6ff412517",
+            inputSide = 3,
+            outputSide = 3,
+            changeItemOutputSide = 3,
+            tempSide = 3
+        },
+        {
+            scheme = "slyb",
+            thresholdHeat = -1,
+            preheatItem = "gregtech:gt.reactorUraniumQuad",
+            reactorChamberAddr = "62342653-be91-491f-9bd0-5d03a9b4e05f",
+            reactorChamberSide = 5,
+            switchRedstone = "f7104a4f-ef19-478b-9267-cadb684b90dc",
+            transforAddr = "d230cd59-116b-43fb-b81d-c2a6ff412517",
+            inputSide = 3,
+            outputSide = 3,
+            changeItemOutputSide = 3,
+            tempSide = 3
         }
     }
 }
