@@ -65,6 +65,7 @@ local function insert(transforAddr, sourceSide, targetSlot, outputSide, name, dm
                 end
             end
         end
+        sourceBox = nil
         print("材料箱未找到物品:" .. name)
         os.sleep(1)
     end
