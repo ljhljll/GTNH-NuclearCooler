@@ -29,7 +29,15 @@ local function scanAdator()
     for i = 1, #reactorChamberList, 1 do
         reactorChambers[i] = reactorChamberList[i]
         reactorChambers[i].running = false
-        print("配置" .. i .. "使用模式:" .. reactorChambers[i].scheme .. "预热堆温:" .. reactorChambers[i].thresholdHeat)
+        if (reactorChambers[i].energy == nil) then
+            reactorChambers[i].energy = true
+        end
+        print("配置" ..
+            i ..
+            "使用模式:" ..
+            reactorChambers[i].scheme ..
+            "预热堆温:" .. reactorChambers[i].thresholdHeat .. "电量控制:" .. tostring(reactorChambers[i]
+                .energy))
     end
 end
 

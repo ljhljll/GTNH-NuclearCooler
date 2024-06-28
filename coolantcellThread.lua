@@ -24,7 +24,7 @@ local function runningReactorChamber(rc)
         end
 
         local canCheck = true
-        if config.energyLatchRedstone ~= -1 then
+        if config.energyLatchRedstone ~= -1 and rc.energy then
             if not getLatchRedstoneSingal() then
                 action.stopReactorChamberByRc(rc)
                 canCheck = false
