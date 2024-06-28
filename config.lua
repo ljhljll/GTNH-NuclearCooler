@@ -97,6 +97,102 @@ return {
     reactorChamberList = {
         {
             -- 对应上面scheme里面的发电模式
+            scheme = "slyb",
+            -- 预热堆温,默认-1不开启,用于99%堆核电(填9900)
+            thresholdHeat = -1,
+            -- 用于预热反应堆的燃料名
+            preheatItem = "gregtech:gt.reactorUraniumQuad",
+            -- 核电仓地址
+            reactorChamberAddr = "06b5c62b-17fb-4909-99ae-0d745aeca04b",
+            -- 核电仓方向
+            reactorChamberSide = 1,
+            -- 开关核电的红石端口地址
+            switchRedstone = "91336ae5-edb7-4913-9474-224d0aae693f",
+            -- 转运器地址
+            transforAddr = "39b51a7e-06ea-4723-a99e-f9e3cc399e88",
+            -- 输入原材料的箱子位置(对转运器来说,例如填5则箱子需要在转运器的左边(east方向))
+            inputSide = 2,
+            -- 输出低耐久冷却单元的箱子位置(对转运器来说,例如填4则箱子需要在转运器的右边(west方向))
+            outputSide = 2,
+            -- 输出枯竭燃料棒的箱子位置(对转运器来说,例如填0则箱子需要在转运器的下边
+            changeItemOutputSide = 2,
+            -- 可自由扩展的箱子(目前用来存放用于99%堆加热的东西，可自由修改)
+            tempSide = 2
+        },
+        {
+            -- 对应上面scheme里面的发电模式
+            scheme = "slyb",
+            -- 预热堆温,默认-1不开启,用于99%堆核电(填9900)
+            thresholdHeat = -1,
+            -- 用于预热反应堆的燃料名
+            preheatItem = "gregtech:gt.reactorUraniumQuad",
+            -- 核电仓地址
+            reactorChamberAddr = "d67da54f-5235-41be-98ab-ff9054d05812",
+            -- 核电仓方向
+            reactorChamberSide = 5,
+            -- 开关核电的红石端口地址
+            switchRedstone = "91336ae5-edb7-4913-9474-224d0aae693f",
+            -- 转运器地址
+            transforAddr = "39b51a7e-06ea-4723-a99e-f9e3cc399e88",
+            -- 输入原材料的箱子位置(对转运器来说,例如填5则箱子需要在转运器的左边(east方向))
+            inputSide = 2,
+            -- 输出低耐久冷却单元的箱子位置(对转运器来说,例如填4则箱子需要在转运器的右边(west方向))
+            outputSide = 2,
+            -- 输出枯竭燃料棒的箱子位置(对转运器来说,例如填0则箱子需要在转运器的下边
+            changeItemOutputSide = 2,
+            -- 可自由扩展的箱子(目前用来存放用于99%堆加热的东西，可自由修改)
+            tempSide = 2
+        },
+        {
+            -- 对应上面scheme里面的发电模式
+            scheme = "slyb",
+            -- 预热堆温,默认-1不开启,用于99%堆核电(填9900)
+            thresholdHeat = -1,
+            -- 用于预热反应堆的燃料名
+            preheatItem = "gregtech:gt.reactorUraniumQuad",
+            -- 核电仓地址
+            reactorChamberAddr = "1af24d78-72e0-40b6-814e-760e05cedd1c",
+            -- 核电仓方向
+            reactorChamberSide = 0,
+            -- 开关核电的红石端口地址
+            switchRedstone = "91336ae5-edb7-4913-9474-224d0aae693f",
+            -- 转运器地址
+            transforAddr = "39b51a7e-06ea-4723-a99e-f9e3cc399e88",
+            -- 输入原材料的箱子位置(对转运器来说,例如填5则箱子需要在转运器的左边(east方向))
+            inputSide = 2,
+            -- 输出低耐久冷却单元的箱子位置(对转运器来说,例如填4则箱子需要在转运器的右边(west方向))
+            outputSide = 2,
+            -- 输出枯竭燃料棒的箱子位置(对转运器来说,例如填0则箱子需要在转运器的下边
+            changeItemOutputSide = 2,
+            -- 可自由扩展的箱子(目前用来存放用于99%堆加热的东西，可自由修改)
+            tempSide = 2
+        },
+        {
+            -- 对应上面scheme里面的发电模式
+            scheme = "slyb",
+            -- 预热堆温,默认-1不开启,用于99%堆核电(填9900)
+            thresholdHeat = -1,
+            -- 用于预热反应堆的燃料名
+            preheatItem = "gregtech:gt.reactorUraniumQuad",
+            -- 核电仓地址
+            reactorChamberAddr = "b38823c3-4e1e-4900-b6f8-09fd375154e9",
+            -- 核电仓方向
+            reactorChamberSide = 4,
+            -- 开关核电的红石端口地址
+            switchRedstone = "91336ae5-edb7-4913-9474-224d0aae693f",
+            -- 转运器地址
+            transforAddr = "39b51a7e-06ea-4723-a99e-f9e3cc399e88",
+            -- 输入原材料的箱子位置(对转运器来说,例如填5则箱子需要在转运器的左边(east方向))
+            inputSide = 2,
+            -- 输出低耐久冷却单元的箱子位置(对转运器来说,例如填4则箱子需要在转运器的右边(west方向))
+            outputSide = 2,
+            -- 输出枯竭燃料棒的箱子位置(对转运器来说,例如填0则箱子需要在转运器的下边
+            changeItemOutputSide = 2,
+            -- 可自由扩展的箱子(目前用来存放用于99%堆加热的东西，可自由修改)
+            tempSide = 2
+        },
+        {
+            -- 对应上面scheme里面的发电模式
             scheme = "mox",
             -- 预热堆温,默认-1不开启,用于99%堆核电(填9900)
             thresholdHeat = 9900,
