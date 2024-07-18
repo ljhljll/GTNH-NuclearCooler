@@ -2,8 +2,20 @@ local database = require("database")
 local action = require("action")
 local thread = require("thread")
 local detection = require("coolantcellThread")
+local config = require("config")
 
-
+-- 清理控制台打印信息，防止内存溢出
+local function clearCommandInterval()
+    while (true) do
+        if not database.getGlobalRedstone() then
+            break;
+        end
+        for i = 1, config.cleatLogInterval, 1 do
+            os.sleep(1)
+        end
+        os.execute("cls")
+    end
+end
 local function reactorChamberStart(rcTable)
     os.execute("cls")
     local threads = {}
@@ -11,6 +23,7 @@ local function reactorChamberStart(rcTable)
     for i = 1, #rcTable do
         threads[i] = thread.create(detection.runningReactorChamber, database.reactorChambers[rcTable[i]])
     end
+    threads[#threads + 1] = thread.create(clearCommandInterval)
     thread.waitForAll(threads)
     action.stopAllReactorChamber()
     print("核反应堆已关闭")
