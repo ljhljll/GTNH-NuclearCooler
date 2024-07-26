@@ -78,7 +78,7 @@ return {
      是否开启电量控制(提供一个红石端口,向该端口开启红石信号后开启核电)
      填入电量控制红石端口的地址,默认不启用（-1)
     --]]
-    energyLatchRedstone = "8994c958-f714-47e9-9c65-6b7c90fd525d",
+    energyLatchRedstone = -1,
     -- 全局红石开关地址(必填)
     globalRedstone = "bc476f9e-04f1-4ef0-bbcc-6d2efb31fe6e",
     --[[
