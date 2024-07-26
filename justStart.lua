@@ -7,14 +7,15 @@ local config = require("config")
 -- 清理控制台打印信息，防止内存溢出
 local function clearCommandInterval()
     while (true) do
-        if not database.getGlobalRedstone() then
-            break;
-        end
         for i = 1, config.cleatLogInterval, 1 do
+            if not database.getGlobalRedstone() then
+                goto stopClear
+            end
             os.sleep(1)
         end
         os.execute("cls")
     end
+    ::stopClear::
 end
 local function reactorChamberStart(rcTable)
     os.execute("cls")
