@@ -18,11 +18,6 @@ end
 local function runningReactorChamber(rc)
     print(rc.reactorChamberAddr .. " is running")
     while true do
-        if not database.getGlobalRedstone() then
-            rc.running = false
-            break;
-        end
-
         local canCheck = true
         if config.energyLatchRedstone ~= -1 and rc.energy then
             if not getLatchRedstoneSingal() then
