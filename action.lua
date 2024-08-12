@@ -27,7 +27,7 @@ end
 local function stopReactorChamberByRc(rc)
     local redstone = component.proxy(rc.switchRedstone)
     rc.running = false
-    -- setOutput为非直接调用，其正确输出对应的红石信号需要至少1tick(100ms)时间
+    -- setOutput为非直接调用，其正确输出对应的红石信号需要至少1tick时间
     redstone.setOutput(rc.reactorChamberSide, 0)
     -- 确保反应堆先停机再继续运行
     os.sleep(1)
