@@ -25,8 +25,20 @@ local function reactorChamberStart(rcTable)
         threads[i] = thread.create(detection.runningReactorChamber, database.reactorChambers[rcTable[i]])
     end
     threads[#threads + 1] = thread.create(clearCommandInterval)
-    thread.waitForAll(threads)
-    action.stopAllReactorChamber()
+    local shutdownThread = thread.create(function()
+        while true do
+            if not database.getGlobalRedstone() then
+                break;
+            end
+        end
+        for i = 1, #threads, 1 do
+            threads[i]:kill()
+            if i <= #threads - 1 then
+                action.stopReactorChamberByRc(database.reactorChambers[i])
+            end
+        end
+    end)
+    thread.waitForAll(shutdownThread)
     print("核反应堆已关闭")
 end
 
