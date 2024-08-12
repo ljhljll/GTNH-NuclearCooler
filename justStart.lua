@@ -17,6 +17,22 @@ local function clearCommandInterval()
     end
     ::stopClear::
 end
+
+local function shutdownThread(threads)
+    while true do
+        if not database.getGlobalRedstone() then
+            break;
+        end
+        os.sleep(0.1)
+    end
+    for i = 1, #threads, 1 do
+        threads[i]:kill()
+        if i <= #threads - 1 then
+            action.stopReactorChamberByRc(database.reactorChambers[i])
+        end
+    end
+end
+
 local function reactorChamberStart(rcTable)
     os.execute("cls")
     local threads = {}
@@ -25,8 +41,8 @@ local function reactorChamberStart(rcTable)
         threads[i] = thread.create(detection.runningReactorChamber, database.reactorChambers[rcTable[i]])
     end
     threads[#threads + 1] = thread.create(clearCommandInterval)
+    threads[#threads + 1] = thread.create(shutdownThread, threads)
     thread.waitForAll(threads)
-    action.stopAllReactorChamber()
     print("核反应堆已关闭")
 end
 
