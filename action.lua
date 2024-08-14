@@ -24,21 +24,24 @@ local function checkItemCount(runningTable)
     end
 end
 
-local function stopReactorChamberByRc(rc)
+local function stopReactorChamberByRc(rc, isBlock)
     local redstone = component.proxy(rc.switchRedstone)
     rc.running = false
     -- setOutput为非直接调用，其正确输出对应的红石信号需要至少1tick时间
     redstone.setOutput(rc.reactorChamberSide, 0)
-    -- 确保反应堆先停机再继续运行
-    os.sleep(1)
-    repeat
-        local singal = redstone.getOutput(rc.reactorChamberSide)
-    until (singal == 0)
+    if isBlock then
+        -- 确保反应堆先停机再继续运行
+        os.sleep(1)
+        repeat
+            local singal = redstone.getOutput(rc.reactorChamberSide)
+        until (singal == 0)
+    end
+    print(rc.reactorChamberAddr .. " is shutdown")
 end
 
-local function stopAllReactorChamber()
+local function stopAllReactorChamber(isBlock)
     for i = 1, #database.reactorChambers, 1 do
-        stopReactorChamberByRc(database.reactorChambers[i])
+        stopReactorChamberByRc(database.reactorChambers[i], isBlock)
     end
 end
 
@@ -86,7 +89,7 @@ local function preheatRc(rc)
     repeat
         local heat = rcComponent.getHeat()
     until (heat >= rc.thresholdHeat)
-    stopReactorChamberByRc(rc)
+    stopReactorChamberByRc(rc, true)
     remove(rc.transforAddr, rc.reactorChamberSide, 1, rc.tempSide)
 end
 
@@ -145,7 +148,7 @@ local function checkItemChangeName(cfgResource, rc)
         -- 名称已变化
         if rcBox[boxSlot - 1].name ~= cfgResource.name
             and rcBox[boxSlot - 1].name == cfgResource.changeName then
-            stopReactorChamberByRc(rc)
+            stopReactorChamberByRc(rc, true)
             removeAndInsert(rc.transforAddr,
                 rc.reactorChamberSide,
                 rc.inputSide,
@@ -171,7 +174,7 @@ local function checkItemDmg(cfgResource, rc)
         -- 耐久是否达到阈值
         if rcBox[boxSlot - 1].damage ~= nil then
             if rcBox[boxSlot - 1].damage >= cfgResource.dmg then
-                stopReactorChamberByRc(rc)
+                stopReactorChamberByRc(rc, true)
                 removeAndInsert(rc.transforAddr, rc.reactorChamberSide, rc.inputSide, boxSlot, rc.outputSide,
                     cfgResource.name, cfgResource.dmg)
                 goto continue

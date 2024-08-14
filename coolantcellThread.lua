@@ -32,7 +32,6 @@ local function runningReactorChamber(rc)
         end
         os.sleep(0.5)
     end
-    print(rc.reactorChamberAddr .. " is shutdown")
 end
 
 return {

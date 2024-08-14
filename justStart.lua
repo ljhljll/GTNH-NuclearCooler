@@ -28,7 +28,7 @@ local function shutdownThread(threads)
     for i = 1, #threads, 1 do
         threads[i]:kill()
         if i <= #threads - 1 then
-            action.stopReactorChamberByRc(database.reactorChambers[i])
+            action.stopReactorChamberByRc(database.reactorChambers[i], true)
         end
     end
 end
@@ -68,12 +68,12 @@ end
 local function init()
     if not database.getGlobalRedstone then
         print("未开启全局开关")
-        action.stopAllReactorChamber()
+        action.stopAllReactorChamber(false)
         os.exit(0)
     end
     database.scanAdator()
 end
 
 init()
-action.stopAllReactorChamber()
+action.stopAllReactorChamber(false)
 justStart()
