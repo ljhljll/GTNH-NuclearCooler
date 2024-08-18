@@ -26,6 +26,9 @@ end
 
 local function stopReactorChamberByRc(rc, isBlock)
     local redstone = component.proxy(rc.switchRedstone)
+    if redstone.getOutput(rc.reactorChamberSide) == 0 then
+        return
+    end
     rc.running = false
     -- setOutput为非直接调用，其正确输出对应的红石信号需要至少1tick时间
     redstone.setOutput(rc.reactorChamberSide, 0)
@@ -76,9 +79,13 @@ local function insert(transforAddr, sourceSide, targetSlot, outputSide, name, dm
 end
 
 local function startReactorChamber(rc)
-    rc.running = true
     local rcRedstone = component.proxy(rc.switchRedstone)
+    if rcRedstone.getOutput(rc.reactorChamberSide) > 0 then
+        return
+    end
+    rc.running = true
     rcRedstone.setOutput(rc.reactorChamberSide, 15)
+    print(rc.reactorChamberAddr .. " is running")
 end
 
 local function preheatRc(rc)

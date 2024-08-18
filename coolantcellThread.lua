@@ -16,7 +16,6 @@ local function getLatchRedstoneSingal()
 end
 
 local function runningReactorChamber(rc)
-    print(rc.reactorChamberAddr .. " is running")
     while true do
         local canCheck = true
         if config.energyLatchRedstone ~= -1 and rc.energy then
