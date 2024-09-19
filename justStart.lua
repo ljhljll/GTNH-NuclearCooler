@@ -19,7 +19,7 @@ local function clearCommandInterval()
             coroutine.yield()
         end
         os.execute("cls")
-        
+        print(string.format("下一次清屏计划在 %d 秒后", config.cleatLogInterval))
     end
     ::stopClear::
 end
@@ -45,14 +45,22 @@ local function reactorChamberStart(rcTable)
     local coroutines = {}
 
     for i = 1, #rcTable do
-        coroutines[i] = coroutine.create(detection.runningReactorChamber, database.reactorChambers[rcTable[i]])
+        coroutines[i] = coroutine.create(function()
+            detection.runningReactorChamber(database.reactorChambers[rcTable[i]])
+        end)
     end
     coroutines[#coroutines + 1] = coroutine.create(clearCommandInterval)
     -- coroutines[#threads + 1] = thread.create(shutdownThread, threads) 
     -- thread.waitForAll(threads)
     while true do 
         for i = 1, #coroutines do 
-            coroutine.resume(coroutines[i])
+            -- coroutine.resume(coroutines[i])
+            if coroutine.status(coroutines[i]) ~= "dead" then
+                local status, err = coroutine.resume(coroutines[i])
+                if not status then
+                    print("Error in coroutine " .. i .. ": " .. err)
+                end
+            end
         end
         if not database.getGlobalRedstone() then
             break;
@@ -61,7 +69,7 @@ local function reactorChamberStart(rcTable)
     end
     -- 所有关闭反应堆
     for i = 1, #rcTable do
-        action.stopReactorChamberByRc(database.reactorChambers[i], true)
+        action.stopReactorChamberByRc(database.reactorChambers[rcTable[i]], true)
     end
     print("核反应堆已关闭")
 end

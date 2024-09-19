@@ -100,6 +100,7 @@ local function preheatRc(rc)
     startReactorChamber(rc)
     repeat
         local heat = rcComponent.getHeat()
+       -- coroutine.yield()
     until (heat >= rc.thresholdHeat)
     stopReactorChamberByRc(rc, true)
     remove(rc.transforAddr, rc.reactorChamberSide, 1, rc.tempSide)
@@ -108,8 +109,8 @@ end
 -- 向核电仓中转移原材料
 local function insertItemsIntoReactorChamber(runningTable)
     checkItemCount(runningTable)
-    for i = 1, #runningTable, 1 do
-        local rc = database.reactorChambers[runningTable[i]]
+    for k = 1, #runningTable, 1 do  -- 原先这里是for i = 1, #runningTable, 1 do，内促内循环还有一个循环变量i，容易出问题
+        local rc = database.reactorChambers[runningTable[k]]
         local transposer = component.proxy(rc.transforAddr)
         local sourceBoxitemList = transposer.getAllStacks(rc.inputSide).getAll()
         local resource = config.scheme[rc.scheme].resource
@@ -137,6 +138,7 @@ local function insertItemsIntoReactorChamber(runningTable)
                 end
             end
         end
+        print(string.format("完成了对核反应堆 %s 的初次材料转移", rc.reactorChamberAddr))
     end
 end
 
@@ -175,6 +177,10 @@ local function checkItemChangeName(cfgResource, rc)
             insert(rc.transforAddr, rc.inputSide, boxSlot, rc.reactorChamberSide, cfgResource.name, -1)
         end
         ::continue::
+
+        if i % 9 == 0 then 
+            coroutine.yield()
+        end
     end
 end
 
@@ -198,6 +204,10 @@ local function checkItemDmg(cfgResource, rc)
             insert(rc.transforAddr, rc.inputSide, boxSlot, rc.reactorChamberSide, cfgResource.name, -1)
         end
         ::continue::
+
+        if i % 9 == 0 then
+            coroutine.yield()
+        end
     end
 end
 
