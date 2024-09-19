@@ -68,8 +68,24 @@ local function reactorChamberStart(rcTable)
         os.sleep(0.1) -- 协程内部不sleep，这里统一Sleep，控制到10tps
     end
     -- 所有关闭反应堆
+    stop_coroutines = {}
     for i = 1, #rcTable do
-        action.stopReactorChamberByRc(database.reactorChambers[rcTable[i]], true)
+        stop_coroutines[i] = coroutine.create(function() 
+            action.stopReactorChamberByRc(database.reactorChambers[rcTable[i]], true)
+        end)
+    end
+   
+    while true do 
+        local stopped_count = 0
+        for i = 1, #rcTable do 
+            local status, err = coroutine.resume(stop_coroutines[i]);
+            if not status then 
+                stopped_count = stopped_count + 1
+            end
+        end
+        if stopped_count == #rcTable then
+            break
+        end
     end
     print("核反应堆已关闭")
 end

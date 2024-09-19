@@ -34,10 +34,9 @@ local function stopReactorChamberByRc(rc, isBlock)
     -- setOutput为非直接调用，其正确输出对应的红石信号需要至少1tick时间
     redstone.setOutput(rc.reactorChamberSide, 0)
     if isBlock then
-        -- 确保反应堆先停机再继续运行
-        os.sleep(1)   -- 这个地方不要改成coroutine.yield()，这里是在等外部的核反应堆停
-        
+        -- 确保反应堆先停机再继续运行 
         repeat
+            coroutine.yield()
             local singal = redstone.getOutput(rc.reactorChamberSide)
         until (singal == 0)
     end
@@ -57,8 +56,8 @@ local function remove(transforAddr, sourceSide, slot, outpuSide)
         if removeCount == 0 then
             print("箱子已满,无法输出物品")
             -- os.sleep(0.1)
-            coroutine.yield()
         end
+        coroutine.yield()
     until (removeCount > 0)
 end
 
@@ -70,6 +69,9 @@ local function insert(transforAddr, sourceSide, targetSlot, outputSide, name, dm
             if item.name == name and (dmg == -1 or item.damage < dmg) then
                 local insertCount = transposer.transferItem(sourceSide, outputSide, 1, index + 1, targetSlot)
                 if insertCount > 0 then
+                    -- while true do 
+                    --     if transposer.getSlotStackSize(
+                    -- end
                     return
                 end
             end
@@ -187,6 +189,7 @@ end
 local function checkItemDmg(cfgResource, rc)
     local transposer = component.proxy(rc.transforAddr)
     local rcBox = transposer.getAllStacks(rc.reactorChamberSide).getAll()
+    local needCheckReady = false
     for i = 1, #cfgResource.slot, 1 do
         local boxSlot = cfgResource.slot[i]
         -- 耐久是否达到阈值
@@ -195,6 +198,7 @@ local function checkItemDmg(cfgResource, rc)
                 stopReactorChamberByRc(rc, true)
                 removeAndInsert(rc.transforAddr, rc.reactorChamberSide, rc.inputSide, boxSlot, rc.outputSide,
                     cfgResource.name, cfgResource.dmg)
+                needCheckReady = true
                 goto continue
             end
         end
@@ -202,11 +206,19 @@ local function checkItemDmg(cfgResource, rc)
         if rcBox[boxSlot - 1].damage == nil then
             stopReactorChamberByRc(rc)
             insert(rc.transforAddr, rc.inputSide, boxSlot, rc.reactorChamberSide, cfgResource.name, -1)
+            needCheckReady = true
         end
         ::continue::
 
         if i % 9 == 0 then
             coroutine.yield()
+        end
+    end
+
+    -- 必须所有物料都齐备了才可以开机
+    if needCheckReady then
+        for i = 1, 50 do 
+            coroutine.yield()  -- wait for 50 ticks
         end
     end
 end
