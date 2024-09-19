@@ -57,10 +57,10 @@ local function reactorChamberStart(rcTable)
         if not database.getGlobalRedstone() then
             break;
         end
-        os.sleep(0.1)
+        os.sleep(0.1) -- 协程内部不sleep，这里统一Sleep，控制到10tps
     end
     -- 所有关闭反应堆
-    for i = 1, #rcTable, 1 do
+    for i = 1, #rcTable do
         action.stopReactorChamberByRc(database.reactorChambers[i], true)
     end
     print("核反应堆已关闭")
