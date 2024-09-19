@@ -9,6 +9,7 @@
 
 ![5联MOX核电](assets/5联MOX核电.png)
 
+(看似火烧眉毛，实则稳得一批）
 
 相比于ljhljll/GTNH-NuclearCooler的修改：
 
