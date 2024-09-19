@@ -47,7 +47,7 @@ local function reactorChamberStart(rcTable)
     for i = 1, #rcTable do
         coroutines[i] = coroutine.create(detection.runningReactorChamber, database.reactorChambers[rcTable[i]])
     end
-    coroutines[#threads + 1] = coroutine.create(clearCommandInterval)
+    coroutines[#coroutines + 1] = coroutine.create(clearCommandInterval)
     -- coroutines[#threads + 1] = thread.create(shutdownThread, threads) 
     -- thread.waitForAll(threads)
     while true do 
