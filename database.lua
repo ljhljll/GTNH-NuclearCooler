@@ -23,7 +23,7 @@ local function getGlobalRedstone()
 end
 
 
-local function scanAdator()
+local function scanAdaptor()
     local reactorChamberList = config.reactorChamberList
     print("读取到" .. #reactorChamberList .. "个核电配置")
     for i = 1, #reactorChamberList, 1 do
@@ -42,7 +42,7 @@ local function scanAdator()
 end
 
 return {
-    scanAdator = scanAdator,
+    scanAdaptor = scanAdaptor,
     reactorChambers = reactorChambers,
     getGlobalRedstone = getGlobalRedstone
 }

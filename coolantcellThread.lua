@@ -2,6 +2,7 @@ local database = require("database")
 local action = require("action")
 local config = require("config")
 local component = require("component")
+local coroutine = require("coroutine")
 
 -- 获取电量锁存器信号
 local function getLatchRedstoneSingal()
@@ -29,7 +30,8 @@ local function runningReactorChamber(rc)
             action.checkReactorChamberDMG(rc, scheme)
             action.startReactorChamber(rc)
         end
-        os.sleep(0.5)
+       -- os.sleep(0.5)
+        coroutine.yield()
     end
 end
 
