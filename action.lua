@@ -54,7 +54,7 @@ local function remove(transforAddr, sourceSide, slot, outpuSide)
         local removeCount = transposer.transferItem(sourceSide, outpuSide, 1, slot)
         if removeCount == 0 then
             print("箱子已满,无法输出物品")
-            os.sleep(1)
+            os.sleep(0.1)
         end
     until (removeCount > 0)
 end
@@ -70,10 +70,10 @@ local function insert(transforAddr, sourceSide, targetSlot, outputSide, name, dm
                     return
                 end
             end
+            os.sleep(0.1)
         end
         sourceBox = nil
         print("材料箱未找到物品:" .. name)
-        sourceBox = nil
         os.sleep(1)
     end
 end
