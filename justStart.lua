@@ -23,7 +23,7 @@ local function shutdownThread(threads)
         if not database.getGlobalRedstone() then
             break;
         end
-        os.sleep(0.1)
+        os.sleep(0)
     end
     for i = 1, #threads, 1 do
         threads[i]:kill()

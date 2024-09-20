@@ -29,7 +29,7 @@ local function runningReactorChamber(rc)
             action.checkReactorChamberDMG(rc, scheme)
             action.startReactorChamber(rc)
         end
-        os.sleep(0.5)
+        os.sleep(0.1)
     end
 end
 

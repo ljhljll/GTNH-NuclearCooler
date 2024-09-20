@@ -34,7 +34,7 @@ local function stopReactorChamberByRc(rc, isBlock)
     redstone.setOutput(rc.reactorChamberSide, 0)
     if isBlock then
         -- 确保反应堆先停机再继续运行
-        os.sleep(1)
+        os.sleep(0)
         repeat
             local singal = redstone.getOutput(rc.reactorChamberSide)
         until (singal == 0)
@@ -54,7 +54,7 @@ local function remove(transforAddr, sourceSide, slot, outpuSide)
         local removeCount = transposer.transferItem(sourceSide, outpuSide, 1, slot)
         if removeCount == 0 then
             print("箱子已满,无法输出物品")
-            os.sleep(0.1)
+            os.sleep(0)
         end
     until (removeCount > 0)
 end
@@ -70,11 +70,11 @@ local function insert(transforAddr, sourceSide, targetSlot, outputSide, name, dm
                     return
                 end
             end
-            os.sleep(0.1)
+            os.sleep(0)
         end
         sourceBox = nil
         print("材料箱未找到物品:" .. name)
-        os.sleep(1)
+        os.sleep(0)
     end
 end
 
