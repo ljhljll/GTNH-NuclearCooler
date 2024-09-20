@@ -204,7 +204,8 @@ local function checkItemDmg(cfgResource, rc)
         end
         -- 是否为空位
         if rcBox[boxSlot - 1].damage == nil then
-            stopReactorChamberByRc(rc)
+            --stopReactorChamberByRc(rc, true)
+            stopReactorChamberByRc(rc, true)
             insert(rc.transforAddr, rc.inputSide, boxSlot, rc.reactorChamberSide, cfgResource.name, -1)
             needCheckReady = true
         end
@@ -217,10 +218,13 @@ local function checkItemDmg(cfgResource, rc)
 
     -- 必须所有物料都齐备了才可以开机
     if needCheckReady then
+        print(string.format("%s is waiting for restart", rc.reactorChamberAddr))
         for i = 1, 50 do 
             coroutine.yield()  -- wait for 50 ticks
         end
+        print(string.format("%s is to restart", rc.reactorChamberAddr))
     end
+   
 end
 
 local function checkReactorChamberDMG(rc, scheme)
