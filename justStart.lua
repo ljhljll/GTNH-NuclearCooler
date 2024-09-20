@@ -8,8 +8,8 @@ local coroutine = require("coroutine")
 local component = require("component")
 
 local function printResidentMessages()
-    local time = os.time()
-    local diffSeconds = time - database.startTimeStamp
+    local time = os.clock()
+    local diffSeconds = math.floor((time - database.startTimeStamp)*100)
     local days = math.floor(diffSeconds / 86400)
     local hours = math.floor((diffSeconds %  86400) / 3600)
     local minutes = math.floor((diffSeconds % 3600) / 60)
@@ -133,7 +133,7 @@ local function justStart()
         table.insert(runningTable, tonumber(index))
     end
 
-    database.startTimeStamp = os.time()
+    database.startTimeStamp = os.clock()
 
     if model == "1" then
         action.insertItemsIntoReactorChamber(runningTable)
