@@ -33,7 +33,7 @@ local function stopReactorChamberByRc(rc, isBlock)
     -- setOutput为非直接调用，其正确输出对应的红石信号需要至少1tick时间
     redstone.setOutput(rc.reactorChamberSideToRS, 0)
     if isBlock then
-        -- 确保反应堆先停机再继续运行 
+        -- 确保反应堆先停机再继续运行
         repeat
             coroutine.yield()
             local singal = redstone.getOutput(rc.reactorChamberSideToRS)
@@ -54,7 +54,6 @@ local function remove(transforAddr, sourceSide, slot, outpuSide)
         local removeCount = transposer.transferItem(sourceSide, outpuSide, 1, slot)
         if removeCount == 0 then
             print("箱子已满,无法输出物品")
-            -- os.sleep(0.1)
         end
         coroutine.yield()
     until (removeCount > 0)
@@ -68,18 +67,12 @@ local function insert(transforAddr, sourceSide, targetSlot, outputSide, name, dm
             if item.name == name and (dmg == -1 or item.damage < dmg) then
                 local insertCount = transposer.transferItem(sourceSide, outputSide, 1, index + 1, targetSlot)
                 if insertCount > 0 then
-                    -- while true do 
-                    --     if transposer.getSlotStackSize(
-                    -- end
                     return
                 end
             end
-            -- os.sleep(0.1)
-            coroutine.yield()
         end
         sourceBox = nil
         print("材料箱未找到物品:" .. name)
-       -- os.sleep(1)
         coroutine.yield()
     end
 end
@@ -101,9 +94,8 @@ local function preheatRc(rc)
     startReactorChamber(rc)
     repeat
         local heat = rcComponent.getHeat()
-       -- coroutine.yield()
-        if not database.getGlobalRedstone() then -- 预热期间如果关了开关也停下
-            break -- 这里不用coroutine.yield了，而是break,这样可以走下面停堆移走预热原料的流程
+        if not database.getGlobalRedstone() then
+            break
         end
     until (heat >= rc.thresholdHeat)
     stopReactorChamberByRc(rc, true)
@@ -113,7 +105,7 @@ end
 -- 向核电仓中转移原材料
 local function insertItemsIntoReactorChamber(runningTable)
     checkItemCount(runningTable)
-    for k = 1, #runningTable, 1 do  -- 原先这里是for i = 1, #runningTable, 1 do，内促内循环还有一个循环变量i，容易出问题
+    for k = 1, #runningTable, 1 do -- 原先这里是for i = 1, #runningTable, 1 do，内促内循环还有一个循环变量i，容易出问题
         local rc = database.reactorChambers[runningTable[k]]
         local transposer = component.proxy(rc.transforAddr)
         local sourceBoxitemList = transposer.getAllStacks(rc.inputSide).getAll()
@@ -182,7 +174,7 @@ local function checkItemChangeName(cfgResource, rc)
         end
         ::continue::
 
-        if i % 9 == 0 then 
+        if i % 9 == 0 then
             coroutine.yield()
         end
     end
@@ -191,7 +183,6 @@ end
 local function checkItemDmg(cfgResource, rc)
     local transposer = component.proxy(rc.transforAddr)
     local rcBox = transposer.getAllStacks(rc.reactorChamberSide).getAll()
-    local needCheckReady = false
     for i = 1, #cfgResource.slot, 1 do
         local boxSlot = cfgResource.slot[i]
         -- 耐久是否达到阈值
@@ -200,16 +191,13 @@ local function checkItemDmg(cfgResource, rc)
                 stopReactorChamberByRc(rc, true)
                 removeAndInsert(rc.transforAddr, rc.reactorChamberSide, rc.inputSide, boxSlot, rc.outputSide,
                     cfgResource.name, cfgResource.dmg)
-                needCheckReady = true
                 goto continue
             end
         end
         -- 是否为空位
         if rcBox[boxSlot - 1].damage == nil then
-            --stopReactorChamberByRc(rc, true)
             stopReactorChamberByRc(rc, true)
             insert(rc.transforAddr, rc.inputSide, boxSlot, rc.reactorChamberSide, cfgResource.name, -1)
-            needCheckReady = true
         end
         ::continue::
 
@@ -217,15 +205,6 @@ local function checkItemDmg(cfgResource, rc)
             coroutine.yield()
         end
     end
-
-    if needCheckReady then -- 必须所有物料都齐备了才可以开机
-        print(string.format("%s is waiting for restart", rc.reactorChamberAddr))
-        for i = 1, 10 do 
-            coroutine.yield()  -- wait for 10 ticks
-        end
-        print(string.format("%s is to restart", rc.reactorChamberAddr))
-    end
-   
 end
 
 local function checkReactorChamberDMG(rc, scheme)

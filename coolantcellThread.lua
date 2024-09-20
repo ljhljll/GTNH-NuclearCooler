@@ -1,4 +1,3 @@
-local database = require("database")
 local action = require("action")
 local config = require("config")
 local component = require("component")
@@ -31,7 +30,6 @@ local function runningReactorChamber(rc)
             coroutine.yield()
             action.startReactorChamber(rc)
         end
-       -- os.sleep(0.5)
         coroutine.yield()
     end
 end
