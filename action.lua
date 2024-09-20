@@ -220,8 +220,8 @@ local function checkItemDmg(cfgResource, rc)
 
     if needCheckReady then -- 必须所有物料都齐备了才可以开机
         print(string.format("%s is waiting for restart", rc.reactorChamberAddr))
-        for i = 1, 50 do 
-            coroutine.yield()  -- wait for 50 ticks
+        for i = 1, 10 do 
+            coroutine.yield()  -- wait for 10 ticks
         end
         print(string.format("%s is to restart", rc.reactorChamberAddr))
     end
