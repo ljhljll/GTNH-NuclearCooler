@@ -27,17 +27,17 @@ end
 
 local function stopReactorChamberByRc(rc, isBlock)
     local redstone = component.proxy(rc.switchRedstone)
-    if redstone.getOutput(rc.reactorChamberSide) == 0 then
+    if redstone.getOutput(rc.reactorChamberSideToRS) == 0 then
         return
     end
     rc.running = false
     -- setOutput为非直接调用，其正确输出对应的红石信号需要至少1tick时间
-    redstone.setOutput(rc.reactorChamberSide, 0)
+    redstone.setOutput(rc.reactorChamberSideToRS, 0)
     if isBlock then
         -- 确保反应堆先停机再继续运行 
         repeat
             coroutine.yield()
-            local singal = redstone.getOutput(rc.reactorChamberSide)
+            local singal = redstone.getOutput(rc.reactorChamberSideToRS)
         until (singal == 0)
     end
     print(rc.reactorChamberAddr .. " is shutdown")
@@ -87,11 +87,11 @@ end
 
 local function startReactorChamber(rc)
     local rcRedstone = component.proxy(rc.switchRedstone)
-    if rcRedstone.getOutput(rc.reactorChamberSide) > 0 then
+    if rcRedstone.getOutput(rc.reactorChamberSideToRS) > 0 then
         return
     end
     rc.running = true
-    rcRedstone.setOutput(rc.reactorChamberSide, 15)
+    rcRedstone.setOutput(rc.reactorChamberSideToRS, 15)
     print(rc.reactorChamberAddr .. " is running")
 end
 
@@ -103,6 +103,9 @@ local function preheatRc(rc)
     repeat
         local heat = rcComponent.getHeat()
        -- coroutine.yield()
+        if not database.getGlobalRedstone() then -- 预热期间如果关了开关也停下
+            break -- 这里不用coroutine.yield了，而是break,这样可以走下面停堆移走预热原料的流程
+        end
     until (heat >= rc.thresholdHeat)
     stopReactorChamberByRc(rc, true)
     remove(rc.transforAddr, rc.reactorChamberSide, 1, rc.tempSide)
