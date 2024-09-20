@@ -14,7 +14,6 @@ local function checkItemCount(runningTable)
                 if item.name and item.name == resource[j].name then
                     num = num + item.size
                 end
-
                 if num >= resource[j].count then break end
             end
             if num < resource[j].count then
@@ -219,8 +218,7 @@ local function checkItemDmg(cfgResource, rc)
         end
     end
 
-    -- 必须所有物料都齐备了才可以开机
-    if needCheckReady then
+    if needCheckReady then -- 必须所有物料都齐备了才可以开机
         print(string.format("%s is waiting for restart", rc.reactorChamberAddr))
         for i = 1, 50 do 
             coroutine.yield()  -- wait for 50 ticks
@@ -245,7 +243,6 @@ local function checkReactorChamberDMG(rc, scheme)
         ::continue::
     end
 end
-
 
 return {
     checkItemCount = checkItemCount,
