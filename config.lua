@@ -93,7 +93,8 @@ return {
     --]]
     reactorChamberList = {
         {
-            scheme = "mox",                                              --模式
+            name = "1号堆",                                              -- 名字，方便辨认
+            scheme = "mox",                                              -- 模式
             thresholdHeat = 9500,                                        -- 预热堆温
             preheatItem = "gregtech:gt.reactorUraniumQuad",              -- 预热燃料
             reactorChamberAddr = "1a21c432-5331-4d22-8f2f-6d94d8473708", -- 核电仓地址
@@ -108,6 +109,7 @@ return {
             energy = nil                                                 -- 是否参与电量控制,默认不填写或者为nil代表参与电量控制,只有在缺电时才会开启,设置为false则无视电量持续监测运行
         },
         {
+            name = "2号堆",                                              -- 名字，方便辨认
             scheme = "mox",                                              --模式
             thresholdHeat = 9500,                                        -- 预热堆温
             preheatItem = "gregtech:gt.reactorUraniumQuad",              -- 预热燃料
@@ -123,6 +125,7 @@ return {
             energy = nil                                                 -- 是否参与电量控制,默认不填写或者为nil代表参与电量控制,只有在缺电时才会开启,设置为false则无视电量持续监测运行
         },
         {
+            name = "3号堆",                                              -- 名字，方便辨认
             scheme = "mox",                                              --模式
             thresholdHeat = 9500,                                        -- 预热堆温
             preheatItem = "gregtech:gt.reactorUraniumQuad",              -- 预热燃料
@@ -138,6 +141,7 @@ return {
             energy = nil                                                 -- 是否参与电量控制,默认不填写或者为nil代表参与电量控制,只有在缺电时才会开启,设置为false则无视电量持续监测运行
         },
         {
+            name = "4号堆",                                              -- 名字，方便辨认
             scheme = "mox",                                              --模式
             thresholdHeat = 9500,                                        -- 预热堆温
             preheatItem = "gregtech:gt.reactorUraniumQuad",              -- 预热燃料
@@ -153,6 +157,7 @@ return {
             energy = nil                                                 -- 是否参与电量控制,默认不填写或者为nil代表参与电量控制,只有在缺电时才会开启,设置为false则无视电量持续监测运行
         },
         {
+            name = "5号堆",                                              -- 名字，方便辨认
             scheme = "mox",                                              --模式
             thresholdHeat = 9500,                                        -- 预热堆温
             preheatItem = "gregtech:gt.reactorUraniumQuad",              -- 预热燃料

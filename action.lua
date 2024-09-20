@@ -17,7 +17,7 @@ local function checkItemCount(runningTable)
                 if num >= resource[j].count then break end
             end
             if num < resource[j].count then
-                print(rc.reactorChamberAddr .. "所需的材料:" .. resource[j].name .. "小于" .. resource[j].count)
+                print(rc.name .. "所需的材料:" .. resource[j].name .. "小于" .. resource[j].count)
                 os.exit(0)
             end
         end
@@ -39,7 +39,7 @@ local function stopReactorChamberByRc(rc, isBlock)
             local singal = redstone.getOutput(rc.reactorChamberSideToRS)
         until (singal == 0)
     end
-    print(rc.reactorChamberAddr .. " is shutdown")
+    print(rc.name .. " is shutdown")
 end
 
 local function stopAllReactorChamber(isBlock)
@@ -82,9 +82,18 @@ local function startReactorChamber(rc)
     if rcRedstone.getOutput(rc.reactorChamberSideToRS) > 0 then
         return
     end
+    if rc.aborted then
+        local heat = rcComponent.getHeat()
+        if heat > rc.thresholdHeat then
+            print(string.format("%s is over-heated, it cannot start. You can cooldown it ant it could restart later.", rc.name))
+        else 
+            rc.aborted = false
+            print(string.format("%s is recovering from over-heated, it is restarting.", rc.name))
+        end
+    end
     rc.running = true
     rcRedstone.setOutput(rc.reactorChamberSideToRS, 15)
-    print(rc.reactorChamberAddr .. " is running")
+    print(rc.name .. " is running")
 end
 
 local function preheatRc(rc)
@@ -113,7 +122,7 @@ local function insertItemsIntoReactorChamber(runningTable)
 
         if rc.thresholdHeat ~= -1 then
             preheatRc(rc)
-            print(rc.reactorChamberAddr .. " 预热完成")
+            print(rc.name .. " 预热完成")
         end
 
         for i = 1, #resource do
@@ -134,7 +143,7 @@ local function insertItemsIntoReactorChamber(runningTable)
                 end
             end
         end
-        print(string.format("完成了对核反应堆 %s 的初次材料转移", rc.reactorChamberAddr))
+        print(string.format("完成了对核反应堆 %s 的初次材料转移", rc.name))
     end
 end
 
