@@ -23,7 +23,7 @@ local function getGlobalRedstone()
 end
 
 
-local function scanAdator()
+local function scanAdaptor()
     local reactorChamberList = config.reactorChamberList
     print("读取到" .. #reactorChamberList .. "个核电配置")
     for i = 1, #reactorChamberList, 1 do
@@ -31,6 +31,9 @@ local function scanAdator()
         reactorChambers[i].running = false
         if (reactorChambers[i].energy == nil) then
             reactorChambers[i].energy = true
+        end
+        if reactorChambers[i].reactorChamberSideToRS == nil then -- 如果没有配置这个，使用和转运器一样的方向设置，这是为了兼容ljhljll/GTNH-NuclearCooler的行为
+            reactorChambers[i].reactorChamberSideToRS = reactorChambers[i].reactorChamberSide
         end
         print("配置" ..
             i ..
@@ -42,7 +45,7 @@ local function scanAdator()
 end
 
 return {
-    scanAdator = scanAdator,
+    scanAdaptor = scanAdaptor,
     reactorChambers = reactorChambers,
     getGlobalRedstone = getGlobalRedstone
 }

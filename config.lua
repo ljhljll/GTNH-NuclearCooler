@@ -78,9 +78,9 @@ return {
      是否开启电量控制(提供一个红石端口,向该端口开启红石信号后开启核电)
      填入电量控制红石端口的地址,默认不启用（-1)
     --]]
-    energyLatchRedstone = -1,
+    energyLatchRedstone = "1b9f4226-97df-4dc7-9d2b-29e49aba384b",
     -- 全局红石开关地址(必填)
-    globalRedstone = "bc476f9e-04f1-4ef0-bbcc-6d2efb31fe6e",
+    globalRedstone = "9c775443-fa8b-47be-a5d9-5e3a869a4c9c",
     --[[
     核电堆配置,可同时配置多台核电并在启动时自己选择开启哪几台,例如下边有2个核电配置，输入1 2即可开两台,只输入2则只启动第二个配置的核电
     方向取值可开启f3来看当前的朝向:
@@ -93,251 +93,79 @@ return {
     --]]
     reactorChamberList = {
         {
-            -- 对应上面scheme里面的发电模式
-            scheme = "mox",
-            -- 预热堆温,默认-1不开启,用于99%堆核电(填9900)
-            thresholdHeat = 9900,
-            -- 用于预热反应堆的燃料名
-            preheatItem = "gregtech:gt.reactorUraniumQuad",
-            -- 核电仓地址
-            reactorChamberAddr = "f5e43bdd-40cb-4ad7-ac52-419a3ac97b8b",
-            -- 核电仓方向
-            reactorChamberSide = 1,
-            -- 开关核电的红石端口地址
-            switchRedstone = "f2df8c22-9883-4f44-b5dc-817bf9e4dac0",
-            -- 转运器地址
-            transforAddr = "e60b533f-85f2-46d6-8391-19db61026aae",
-            -- 输入原材料的箱子位置(对转运器来说,例如填5则箱子需要在转运器的左边(east方向))
-            inputSide = 5,
-            -- 输出低耐久冷却单元的箱子位置(对转运器来说,例如填4则箱子需要在转运器的右边(west方向))
-            outputSide = 5,
-            -- 输出枯竭燃料棒的箱子位置(对转运器来说,例如填0则箱子需要在转运器的下边
-            changeItemOutputSide = 5,
-            -- 可自由扩展的箱子(目前用来存放用于99%堆加热的东西，可自由修改)
-            tempSide = 5,
-            -- 是否参与电量控制,默认不填写或者为nil代表参与电量控制,只有在缺电时才会开启,设置为false则无视电量持续监测运行
-            energy = nil
+            scheme = "mox",--模式
+            thresholdHeat = 9500,-- 预热堆温
+            preheatItem = "gregtech:gt.reactorUraniumQuad", -- 预热燃料
+            reactorChamberAddr = "1a21c432-5331-4d22-8f2f-6d94d8473708", -- 核电仓地址
+            reactorChamberSide = 4, -- 核电仓方向
+            switchRedstone = "c072f967-8505-417b-836a-989820d3e029",  -- 开关核电的红石端口地址
+            reactorChamberSideToRS = 1, -- 核电仓相对于红石信号器的方向
+            transforAddr = "5a86daa2-52ad-4da4-8d77-7cd5ef5c44ad",  -- 转运器地址
+            inputSide = 0, -- 输入原材料的箱子位置
+            outputSide = 3,  -- 输出低耐久冷却单元的箱子位置
+            changeItemOutputSide = 1,  -- 输出枯竭燃料棒
+            tempSide = 2,   -- 堆加热的东西的箱子位置
+            energy = nil -- 是否参与电量控制,默认不填写或者为nil代表参与电量控制,只有在缺电时才会开启,设置为false则无视电量持续监测运行
         },
         {
-            scheme = "mox",
-            thresholdHeat = 9900,
-            preheatItem = "gregtech:gt.reactorUraniumQuad",
-            reactorChamberAddr = "bfcd305f-38cd-4c7d-aa6f-1e36eb464240",
-            reactorChamberSide = 3,
-            switchRedstone = "f2df8c22-9883-4f44-b5dc-817bf9e4dac0",
-            transforAddr = "e60b533f-85f2-46d6-8391-19db61026aae",
-            inputSide = 5,
-            outputSide = 5,
-            changeItemOutputSide = 5,
-            tempSide = 5
+            scheme = "mox",--模式
+            thresholdHeat = 9500,-- 预热堆温
+            preheatItem = "gregtech:gt.reactorUraniumQuad", -- 预热燃料
+            reactorChamberAddr = "5718cf3c-1789-41e2-9da3-f2d300e68749", -- 核电仓地址
+            reactorChamberSide = 4, -- 核电仓方向
+            switchRedstone = "e0ce46c1-ca8d-4fbc-ab44-b9518d498044",  -- 开关核电的红石端口地址
+            reactorChamberSideToRS = 0, -- 核电仓相对于红石信号器的方向
+            transforAddr = "3f34866d-9748-425b-a919-f8c893760954",  -- 转运器地址
+            inputSide = 0, -- 输入原材料的箱子位置
+            outputSide = 3,  -- 输出低耐久冷却单元的箱子位置
+            changeItemOutputSide = 1,  -- 输出枯竭燃料棒
+            tempSide = 2,   -- 堆加热的东西的箱子位置
+            energy = nil -- 是否参与电量控制,默认不填写或者为nil代表参与电量控制,只有在缺电时才会开启,设置为false则无视电量持续监测运行
         },
         {
-            scheme = "mox",
-            thresholdHeat = 9900,
-            preheatItem = "gregtech:gt.reactorUraniumQuad",
-            reactorChamberAddr = "0bf7e586-4e77-4136-8224-f35925bbdfc7",
-            reactorChamberSide = 0,
-            switchRedstone = "f2df8c22-9883-4f44-b5dc-817bf9e4dac0",
-            transforAddr = "e60b533f-85f2-46d6-8391-19db61026aae",
-            inputSide = 5,
-            outputSide = 5,
-            changeItemOutputSide = 5,
-            tempSide = 5
+            scheme = "mox",--模式
+            thresholdHeat = 9500,-- 预热堆温
+            preheatItem = "gregtech:gt.reactorUraniumQuad", -- 预热燃料
+            reactorChamberAddr = "79a482bf-4627-454c-b119-595f7944b97b", -- 核电仓地址
+            reactorChamberSide = 4, -- 核电仓方向
+            switchRedstone = "f7e2f68f-fb13-407d-8f0b-b75edfcfd588",  -- 开关核电的红石端口地址
+            reactorChamberSideToRS = 1, -- 核电仓相对于红石信号器的方向
+            transforAddr = "d435507f-7973-4fbb-a107-4ebf448cf314",  -- 转运器地址
+            inputSide = 0, -- 输入原材料的箱子位置
+            outputSide = 3,  -- 输出低耐久冷却单元的箱子位置
+            changeItemOutputSide = 1,  -- 输出枯竭燃料棒
+            tempSide = 2,   -- 堆加热的东西的箱子位置
+            energy = nil -- 是否参与电量控制,默认不填写或者为nil代表参与电量控制,只有在缺电时才会开启,设置为false则无视电量持续监测运行
         },
         {
-            scheme = "mox",
-            thresholdHeat = 9900,
-            preheatItem = "gregtech:gt.reactorUraniumQuad",
-            reactorChamberAddr = "384f9e56-01ca-4f24-9121-eee7f7b0b2f9",
-            reactorChamberSide = 2,
-            switchRedstone = "f2df8c22-9883-4f44-b5dc-817bf9e4dac0",
-            transforAddr = "e60b533f-85f2-46d6-8391-19db61026aae",
-            inputSide = 5,
-            outputSide = 5,
-            changeItemOutputSide = 5,
-            tempSide = 5
+            scheme = "mox",--模式
+            thresholdHeat = 9500,-- 预热堆温
+            preheatItem = "gregtech:gt.reactorUraniumQuad", -- 预热燃料
+            reactorChamberAddr = "1eb88227-0c91-440d-bc27-ef2918f832e0", -- 核电仓地址
+            reactorChamberSide = 4, -- 核电仓方向
+            switchRedstone = "0d904402-9be5-49d9-8b90-62bc8f31ddf5",  -- 开关核电的红石端口地址
+            reactorChamberSideToRS = 0, -- 核电仓相对于红石信号器的方向
+            transforAddr = "930f1cce-8088-4cdd-8a10-25fa2df0fb7a",  -- 转运器地址
+            inputSide = 0, -- 输入原材料的箱子位置
+            outputSide = 3,  -- 输出低耐久冷却单元的箱子位置
+            changeItemOutputSide = 1,  -- 输出枯竭燃料棒
+            tempSide = 2,   -- 堆加热的东西的箱子位置
+            energy = nil -- 是否参与电量控制,默认不填写或者为nil代表参与电量控制,只有在缺电时才会开启,设置为false则无视电量持续监测运行
         },
         {
-            -- 对应上面scheme里面的发电模式
-            scheme = "mox",
-            -- 预热堆温,默认-1不开启,用于99%堆核电(填9900)
-            thresholdHeat = 9900,
-            -- 用于预热反应堆的燃料名
-            preheatItem = "gregtech:gt.reactorUraniumQuad",
-            -- 核电仓地址
-            reactorChamberAddr = "9e7fa7ca-603c-468f-98bc-8d877ba5e7c2",
-            -- 核电仓方向
-            reactorChamberSide = 1,
-            -- 开关核电的红石端口地址
-            switchRedstone = "75669c66-93a6-4242-bdf1-f8e57df070d5",
-            -- 转运器地址
-            transforAddr = "b7041056-c419-4106-bec8-92e8f63b0496",
-            -- 输入原材料的箱子位置(对转运器来说,例如填5则箱子需要在转运器的左边(east方向))
-            inputSide = 5,
-            -- 输出低耐久冷却单元的箱子位置(对转运器来说,例如填4则箱子需要在转运器的右边(west方向))
-            outputSide = 5,
-            -- 输出枯竭燃料棒的箱子位置(对转运器来说,例如填0则箱子需要在转运器的下边
-            changeItemOutputSide = 5,
-            -- 可自由扩展的箱子(目前用来存放用于99%堆加热的东西，可自由修改)
-            tempSide = 5
+            scheme = "mox",--模式
+            thresholdHeat = 9500,-- 预热堆温
+            preheatItem = "gregtech:gt.reactorUraniumQuad", -- 预热燃料
+            reactorChamberAddr = "3dd59913-8c21-4dc4-8395-805d5a40ef6b", -- 核电仓地址
+            reactorChamberSide = 4, -- 核电仓方向
+            switchRedstone = "6b6b213b-1d63-4c2f-8c84-0386f212b782",  -- 开关核电的红石端口地址
+            reactorChamberSideToRS = 1, -- 核电仓相对于红石信号器的方向
+            transforAddr = "704597b2-573a-4ac3-900e-f695ef214963",  -- 转运器地址
+            inputSide = 0, -- 输入原材料的箱子位置
+            outputSide = 3,  -- 输出低耐久冷却单元的箱子位置
+            changeItemOutputSide = 1,  -- 输出枯竭燃料棒
+            tempSide = 2,   -- 堆加热的东西的箱子位置
+            energy = nil -- 是否参与电量控制,默认不填写或者为nil代表参与电量控制,只有在缺电时才会开启,设置为false则无视电量持续监测运行
         },
-        {
-            scheme = "mox",
-            thresholdHeat = 9900,
-            preheatItem = "gregtech:gt.reactorUraniumQuad",
-            reactorChamberAddr = "abdfdabc-6546-4d12-a585-cf276e52a985",
-            reactorChamberSide = 3,
-            switchRedstone = "75669c66-93a6-4242-bdf1-f8e57df070d5",
-            transforAddr = "b7041056-c419-4106-bec8-92e8f63b0496",
-            inputSide = 5,
-            outputSide = 5,
-            changeItemOutputSide = 5,
-            tempSide = 5
-        },
-        {
-            scheme = "mox",
-            thresholdHeat = 9900,
-            preheatItem = "gregtech:gt.reactorUraniumQuad",
-            reactorChamberAddr = "741489c9-b562-4c94-833c-9d3a5af2f601",
-            reactorChamberSide = 0,
-            switchRedstone = "75669c66-93a6-4242-bdf1-f8e57df070d5",
-            transforAddr = "b7041056-c419-4106-bec8-92e8f63b0496",
-            inputSide = 5,
-            outputSide = 5,
-            changeItemOutputSide = 5,
-            tempSide = 5
-        },
-        {
-            scheme = "mox",
-            thresholdHeat = 9900,
-            preheatItem = "gregtech:gt.reactorUraniumQuad",
-            reactorChamberAddr = "7672565a-35d8-4c90-8ff3-dcfd74f79534",
-            reactorChamberSide = 2,
-            switchRedstone = "75669c66-93a6-4242-bdf1-f8e57df070d5",
-            transforAddr = "b7041056-c419-4106-bec8-92e8f63b0496",
-            inputSide = 5,
-            outputSide = 5,
-            changeItemOutputSide = 5,
-            tempSide = 5
-        },
-        {
-            scheme = "mox",
-            thresholdHeat = 9900,
-            preheatItem = "gregtech:gt.reactorUraniumQuad",
-            reactorChamberAddr = "0a106c16-eacc-4dd7-a9c4-d635316ce0f4",
-            reactorChamberSide = 1,
-            switchRedstone = "305b1e82-26e4-4dd6-b4bb-ce4aa7d0d844",
-            transforAddr = "cf154cb3-86a9-44ba-91ec-f914ce714956",
-            inputSide = 4,
-            outputSide = 4,
-            changeItemOutputSide = 4,
-            tempSide = 4
-        },
-        {
-            scheme = "mox",
-            thresholdHeat = 9900,
-            preheatItem = "gregtech:gt.reactorUraniumQuad",
-            reactorChamberAddr = "6d11ee29-3d46-4e3c-ab29-d4d3c5b9f4f8",
-            reactorChamberSide = 2,
-            switchRedstone = "305b1e82-26e4-4dd6-b4bb-ce4aa7d0d844",
-            transforAddr = "cf154cb3-86a9-44ba-91ec-f914ce714956",
-            inputSide = 4,
-            outputSide = 4,
-            changeItemOutputSide = 4,
-            tempSide = 4
-        },
-        {
-            scheme = "mox",
-            thresholdHeat = 9900,
-            preheatItem = "gregtech:gt.reactorUraniumQuad",
-            reactorChamberAddr = "a9aab1b2-2086-4e6e-b76b-86bd0dab7e32",
-            reactorChamberSide = 0,
-            switchRedstone = "305b1e82-26e4-4dd6-b4bb-ce4aa7d0d844",
-            transforAddr = "cf154cb3-86a9-44ba-91ec-f914ce714956",
-            inputSide = 4,
-            outputSide = 4,
-            changeItemOutputSide = 4,
-            tempSide = 4
-        },
-        {
-            scheme = "mox",
-            thresholdHeat = 9900,
-            preheatItem = "gregtech:gt.reactorUraniumQuad",
-            reactorChamberAddr = "84c18ced-80e1-4956-9d35-a030373270d9",
-            reactorChamberSide = 3,
-            switchRedstone = "305b1e82-26e4-4dd6-b4bb-ce4aa7d0d844",
-            transforAddr = "cf154cb3-86a9-44ba-91ec-f914ce714956",
-            inputSide = 4,
-            outputSide = 4,
-            changeItemOutputSide = 4,
-            tempSide = 4
-        },
-
-        {
-            scheme = "mox",
-            thresholdHeat = 9900,
-            preheatItem = "gregtech:gt.reactorUraniumQuad",
-            reactorChamberAddr = "15470de5-fc50-4fb5-8b31-6356d3a3a64d",
-            reactorChamberSide = 1,
-            switchRedstone = "55718679-eb88-4536-baf7-218ddf32cd4f",
-            transforAddr = "b0bbbd6f-5fae-46ac-8c26-aecbeb3f6cde",
-            inputSide = 4,
-            outputSide = 4,
-            changeItemOutputSide = 4,
-            tempSide = 4
-        },
-        {
-            scheme = "mox",
-            thresholdHeat = 9900,
-            preheatItem = "gregtech:gt.reactorUraniumQuad",
-            reactorChamberAddr = "a65fce83-0bae-42b7-ad5b-62f32637d09e",
-            reactorChamberSide = 2,
-            switchRedstone = "55718679-eb88-4536-baf7-218ddf32cd4f",
-            transforAddr = "b0bbbd6f-5fae-46ac-8c26-aecbeb3f6cde",
-            inputSide = 4,
-            outputSide = 4,
-            changeItemOutputSide = 4,
-            tempSide = 4
-        },
-        {
-            scheme = "mox",
-            thresholdHeat = 9900,
-            preheatItem = "gregtech:gt.reactorUraniumQuad",
-            reactorChamberAddr = "bf057a83-9e69-4221-9614-401ff177e274",
-            reactorChamberSide = 0,
-            switchRedstone = "55718679-eb88-4536-baf7-218ddf32cd4f",
-            transforAddr = "b0bbbd6f-5fae-46ac-8c26-aecbeb3f6cde",
-            inputSide = 4,
-            outputSide = 4,
-            changeItemOutputSide = 4,
-            tempSide = 4
-        },
-        {
-            scheme = "mox",
-            thresholdHeat = 9900,
-            preheatItem = "gregtech:gt.reactorUraniumQuad",
-            reactorChamberAddr = "bccae71c-96f9-4a35-8cd6-4b69d08f0a54",
-            reactorChamberSide = 3,
-            switchRedstone = "55718679-eb88-4536-baf7-218ddf32cd4f",
-            transforAddr = "b0bbbd6f-5fae-46ac-8c26-aecbeb3f6cde",
-            inputSide = 4,
-            outputSide = 4,
-            changeItemOutputSide = 4,
-            tempSide = 4
-        },
-        {
-            scheme = "yghhw",
-            thresholdHeat = -1,
-            preheatItem = "gregtech:gt.reactorUraniumQuad",
-            reactorChamberAddr = "a898e0b4-3fbc-4eb3-a983-0361426f42cf",
-            reactorChamberSide = 5,
-            switchRedstone = "9cc5d3a1-f1f4-4fae-9101-b5ce0ae8e8e7",
-            energy = false,
-            transforAddr = "683286ce-1398-4d89-af90-7db99cf17678",
-            inputSide = 2,
-            outputSide = 3,
-            changeItemOutputSide = 0,
-            tempSide = 1
-        }
     }
 }

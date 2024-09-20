@@ -3,42 +3,91 @@ local action = require("action")
 local thread = require("thread")
 local detection = require("coolantcellThread")
 local config = require("config")
+local coroutine = require("coroutine")
 
 -- 清理控制台打印信息，防止内存溢出
 local function clearCommandInterval()
     while (true) do
-        for i = 1, config.cleatLogInterval, 1 do
-            if not database.getGlobalRedstone() then
-                goto stopClear
-            end
-            os.sleep(1)
+        -- for i = 1, config.cleatLogInterval, 1 do
+        --     if not database.getGlobalRedstone() then
+        --         goto stopClear
+        --     end
+        --     os.sleep(1)
+        --     coroutine.yield()
+        -- end
+        for i = 1, (config.cleatLogInterval * 10) do 
+            coroutine.yield()
         end
         os.execute("cls")
+        print(string.format("下一次清屏计划在 %d 秒后", config.cleatLogInterval))
     end
     ::stopClear::
 end
+
+-- local function shutdownThread(threads)
+--     while true do
+--         if not database.getGlobalRedstone() then
+--             break;
+--         end
+--         os.sleep(0.1)
+--     end
+--     for i = 1, #threads, 1 do
+--         threads[i]:kill()
+--         if i <= #threads - 1 then
+--             action.stopReactorChamberByRc(database.reactorChambers[i], true)
+--         end
+--     end
+-- end
+
 local function reactorChamberStart(rcTable)
     os.execute("cls")
-    local threads = {}
+   -- local threads = {}
+    local coroutines = {}
 
     for i = 1, #rcTable do
-        threads[i] = thread.create(detection.runningReactorChamber, database.reactorChambers[rcTable[i]])
+        coroutines[i] = coroutine.create(function()
+            detection.runningReactorChamber(database.reactorChambers[rcTable[i]])
+        end)
     end
-    threads[#threads + 1] = thread.create(clearCommandInterval)
-    local shutdownThread = thread.create(function()
-        while true do
-            if not database.getGlobalRedstone() then
-                break;
+    coroutines[#coroutines + 1] = coroutine.create(clearCommandInterval)
+    -- coroutines[#threads + 1] = thread.create(shutdownThread, threads) 
+    -- thread.waitForAll(threads)
+    while true do 
+        for i = 1, #coroutines do 
+            -- coroutine.resume(coroutines[i])
+            if coroutine.status(coroutines[i]) ~= "dead" then
+                local status, err = coroutine.resume(coroutines[i])
+                if not status then
+                    print("Error in coroutine " .. i .. ": " .. err)
+                end
             end
         end
-        for i = 1, #threads, 1 do
-            threads[i]:kill()
-            if i <= #threads - 1 then
-                action.stopReactorChamberByRc(database.reactorChambers[i])
+        if not database.getGlobalRedstone() then
+            break;
+        end
+        os.sleep(0.1) -- 协程内部不sleep，这里统一Sleep，控制到10tps
+    end
+    -- 所有关闭反应堆
+    stop_coroutines = {}
+    for i = 1, #rcTable do
+        stop_coroutines[i] = coroutine.create(function() 
+            action.stopReactorChamberByRc(database.reactorChambers[rcTable[i]], true)
+        end)
+    end
+   
+    while true do 
+        local stopped_count = 0
+        for i = 1, #rcTable do 
+            local status, err = coroutine.resume(stop_coroutines[i]);
+            if not status then 
+                stopped_count = stopped_count + 1
             end
         end
-    end)
-    thread.waitForAll(shutdownThread)
+        if stopped_count == #rcTable then
+            break
+        end
+    end
+
     print("核反应堆已关闭")
 end
 
@@ -62,14 +111,14 @@ local function justStart()
 end
 
 local function init()
-    if not database.getGlobalRedstone then
+    if not database.getGlobalRedstone() then
         print("未开启全局开关")
-        action.stopAllReactorChamber()
+        action.stopAllReactorChamber(false)
         os.exit(0)
     end
-    database.scanAdator()
+    database.scanAdaptor()
 end
 
 init()
-action.stopAllReactorChamber()
+action.stopAllReactorChamber(false)
 justStart()

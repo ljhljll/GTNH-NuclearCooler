@@ -2,6 +2,7 @@ local database = require("database")
 local action = require("action")
 local config = require("config")
 local component = require("component")
+local coroutine = require("coroutine")
 
 -- 获取电量锁存器信号
 local function getLatchRedstoneSingal()
@@ -16,7 +17,6 @@ local function getLatchRedstoneSingal()
 end
 
 local function runningReactorChamber(rc)
-    print(rc.reactorChamberAddr .. " is running")
     while true do
         local canCheck = true
         if config.energyLatchRedstone ~= -1 and rc.energy then
@@ -28,11 +28,12 @@ local function runningReactorChamber(rc)
         if canCheck then
             local scheme = config.scheme[rc.scheme]
             action.checkReactorChamberDMG(rc, scheme)
+            coroutine.yield()
             action.startReactorChamber(rc)
         end
-        os.sleep(0.5)
+       -- os.sleep(0.5)
+        coroutine.yield()
     end
-    print(rc.reactorChamberAddr .. " is shutdown")
 end
 
 return {
