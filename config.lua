@@ -95,7 +95,7 @@ return {
         {
             name = "1号堆",                                              -- 名字，方便辨认
             scheme = "mox",                                              -- 模式
-            thresholdHeat = 9500,                                        -- 预热堆温
+            thresholdHeat = 9000,                                        -- 预热堆温
             preheatItem = "gregtech:gt.reactorUraniumQuad",              -- 预热燃料
             reactorChamberAddr = "1a21c432-5331-4d22-8f2f-6d94d8473708", -- 核电仓地址
             reactorChamberSide = 4,                                      -- 核电仓方向
@@ -111,7 +111,7 @@ return {
         {
             name = "2号堆",                                              -- 名字，方便辨认
             scheme = "mox",                                              --模式
-            thresholdHeat = 9500,                                        -- 预热堆温
+            thresholdHeat = 9000,                                        -- 预热堆温
             preheatItem = "gregtech:gt.reactorUraniumQuad",              -- 预热燃料
             reactorChamberAddr = "5718cf3c-1789-41e2-9da3-f2d300e68749", -- 核电仓地址
             reactorChamberSide = 4,                                      -- 核电仓方向
@@ -127,7 +127,7 @@ return {
         {
             name = "3号堆",                                              -- 名字，方便辨认
             scheme = "mox",                                              --模式
-            thresholdHeat = 9500,                                        -- 预热堆温
+            thresholdHeat = 9000,                                        -- 预热堆温
             preheatItem = "gregtech:gt.reactorUraniumQuad",              -- 预热燃料
             reactorChamberAddr = "79a482bf-4627-454c-b119-595f7944b97b", -- 核电仓地址
             reactorChamberSide = 4,                                      -- 核电仓方向
@@ -143,7 +143,7 @@ return {
         {
             name = "4号堆",                                              -- 名字，方便辨认
             scheme = "mox",                                              --模式
-            thresholdHeat = 9500,                                        -- 预热堆温
+            thresholdHeat = 9000,                                        -- 预热堆温
             preheatItem = "gregtech:gt.reactorUraniumQuad",              -- 预热燃料
             reactorChamberAddr = "1eb88227-0c91-440d-bc27-ef2918f832e0", -- 核电仓地址
             reactorChamberSide = 4,                                      -- 核电仓方向
@@ -159,7 +159,7 @@ return {
         {
             name = "5号堆",                                              -- 名字，方便辨认
             scheme = "mox",                                              --模式
-            thresholdHeat = 9500,                                        -- 预热堆温
+            thresholdHeat = 9000,                                        -- 预热堆温
             preheatItem = "gregtech:gt.reactorUraniumQuad",              -- 预热燃料
             reactorChamberAddr = "3dd59913-8c21-4dc4-8395-805d5a40ef6b", -- 核电仓地址
             reactorChamberSide = 4,                                      -- 核电仓方向
