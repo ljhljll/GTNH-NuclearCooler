@@ -83,13 +83,16 @@ local function startReactorChamber(rc)
         return
     end
     if rc.aborted then
-        local heat = rcComponent.getHeat()
-        if heat > rc.thresholdHeat then
-            print(string.format("%s is over-heated, it cannot start. You can cooldown it ant it could restart later.", rc.name))
-        else 
-            rc.aborted = false
-            print(string.format("%s is recovering from over-heated, it is restarting.", rc.name))
-        end
+        print(string.format("%s was over-heated, it cannot start. You can manually cooldown it and then restart the program.", rc.name))
+        return
+        -- local heat = rcComponent.getHeat()
+        -- if heat > rc.thresholdHeat then
+        --     print(string.format("%s is over-heated, it cannot start. You can cooldown it ant it could restart later.", rc.name))
+        --     return
+        -- else 
+        --     rc.aborted = false
+        --     print(string.format("%s is recovering from over-heated, it is restarting.", rc.name))
+        -- end
     end
     rc.running = true
     rcRedstone.setOutput(rc.reactorChamberSideToRS, 15)
