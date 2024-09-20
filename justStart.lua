@@ -87,6 +87,7 @@ local function reactorChamberStart(rcTable)
             break
         end
     end
+
     print("核反应堆已关闭")
 end
 
