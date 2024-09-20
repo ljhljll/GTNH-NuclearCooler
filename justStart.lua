@@ -8,40 +8,17 @@ local coroutine = require("coroutine")
 -- 清理控制台打印信息，防止内存溢出
 local function clearCommandInterval()
     while (true) do
-        -- for i = 1, config.cleatLogInterval, 1 do
-        --     if not database.getGlobalRedstone() then
-        --         goto stopClear
-        --     end
-        --     os.sleep(1)
-        --     coroutine.yield()
-        -- end
-        for i = 1, (config.cleatLogInterval * 10) do 
+        for i = 1, (config.cleatLogInterval * 10) do
             coroutine.yield()
         end
         os.execute("cls")
         print(string.format("下一次清屏计划在 %d 秒后", config.cleatLogInterval))
     end
-    ::stopClear::
 end
-
--- local function shutdownThread(threads)
---     while true do
---         if not database.getGlobalRedstone() then
---             break;
---         end
---         os.sleep(0.1)
---     end
---     for i = 1, #threads, 1 do
---         threads[i]:kill()
---         if i <= #threads - 1 then
---             action.stopReactorChamberByRc(database.reactorChambers[i], true)
---         end
---     end
--- end
 
 local function reactorChamberStart(rcTable)
     os.execute("cls")
-   -- local threads = {}
+    -- local threads = {}
     local coroutines = {}
 
     for i = 1, #rcTable do
@@ -50,11 +27,8 @@ local function reactorChamberStart(rcTable)
         end)
     end
     coroutines[#coroutines + 1] = coroutine.create(clearCommandInterval)
-    -- coroutines[#threads + 1] = thread.create(shutdownThread, threads) 
-    -- thread.waitForAll(threads)
-    while true do 
-        for i = 1, #coroutines do 
-            -- coroutine.resume(coroutines[i])
+    while true do
+        for i = 1, #coroutines do
             if coroutine.status(coroutines[i]) ~= "dead" then
                 local status, err = coroutine.resume(coroutines[i])
                 if not status then
@@ -68,18 +42,18 @@ local function reactorChamberStart(rcTable)
         os.sleep(0.1) -- 协程内部不sleep，这里统一Sleep，控制到10tps
     end
     -- 所有关闭反应堆
-    stop_coroutines = {}
+    local stop_coroutines = {}
     for i = 1, #rcTable do
-        stop_coroutines[i] = coroutine.create(function() 
+        stop_coroutines[i] = coroutine.create(function()
             action.stopReactorChamberByRc(database.reactorChambers[rcTable[i]], true)
         end)
     end
-   
-    while true do 
+
+    while true do
         local stopped_count = 0
-        for i = 1, #rcTable do 
+        for i = 1, #rcTable do
             local status, err = coroutine.resume(stop_coroutines[i]);
-            if not status then 
+            if not status then
                 stopped_count = stopped_count + 1
             end
         end
