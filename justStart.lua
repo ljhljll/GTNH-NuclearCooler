@@ -66,7 +66,7 @@ local function justStart()
 end
 
 local function init()
-    if not database.getGlobalRedstone then
+    if not database.getGlobalRedstone() then
         print("未开启全局开关")
         action.stopAllReactorChamber(false)
         os.exit(0)
