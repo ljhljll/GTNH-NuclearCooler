@@ -64,9 +64,12 @@ local function heatMonitor(rcTable)
             end
             coroutine.yield()
         end
-        for i = 1,10 do 
-            coroutine.yield() -- 间隔10tick再做下一轮检查
-        end
+        coroutine.yield()
+        coroutine.yield() -- update: 大幅度提高检测频率
+        coroutine.yield()
+        -- for i = 1,10 do 
+        --     coroutine.yield() -- 间隔10tick再做下一轮检查
+        -- end
     end
 end
 
