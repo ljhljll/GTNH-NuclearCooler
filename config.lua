@@ -78,9 +78,9 @@ return {
      是否开启电量控制(提供一个红石端口,向该端口开启红石信号后开启核电)
      填入电量控制红石端口的地址,默认不启用（-1)
     --]]
-    energyLatchRedstone = "1b9f4226-97df-4dc7-9d2b-29e49aba384b",
+    energyLatchRedstone = "535435c8-1019-440a-8b22-b8bc1b6cf9a5",
     -- 全局红石开关地址(必填)
-    globalRedstone = "9c775443-fa8b-47be-a5d9-5e3a869a4c9c",
+    globalRedstone = "00b0cb29-bc9a-488a-8605-22a31028ed95",
     --[[
     核电堆配置,可同时配置多台核电并在启动时自己选择开启哪几台,例如下边有2个核电配置，输入1 2即可开两台,只输入2则只启动第二个配置的核电
     方向取值可开启f3来看当前的朝向:
@@ -93,79 +93,64 @@ return {
     --]]
     reactorChamberList = {
         {
-            scheme = "mox",                                              --模式
-            thresholdHeat = 9500,                                        -- 预热堆温
+            scheme = "slyb",                                             --模式
+            thresholdHeat = -1,                                          -- 预热堆温
             preheatItem = "gregtech:gt.reactorUraniumQuad",              -- 预热燃料
-            reactorChamberAddr = "1a21c432-5331-4d22-8f2f-6d94d8473708", -- 核电仓地址
-            reactorChamberSide = 4,                                      -- 核电仓方向
-            switchRedstone = "c072f967-8505-417b-836a-989820d3e029",     -- 开关核电的红石端口地址
+            reactorChamberAddr = "e044a135-4d27-4403-902e-b0d8d66b1c53", -- 核电仓地址
+            reactorChamberSide = 1,                                      -- 核电仓方向
+            switchRedstone = "49b24209-57c8-445d-8e9e-473fec29f3de",     -- 开关核电的红石端口地址
             reactorChamberSideToRS = 1,                                  -- 核电仓相对于红石信号器的方向 旧版本更新的话默认填写nil即可会取{reactorChamberSide}的方向
-            transforAddr = "5a86daa2-52ad-4da4-8d77-7cd5ef5c44ad",       -- 转运器地址
-            inputSide = 0,                                               -- 输入原材料的箱子位置
+            transforAddr = "4a9956c3-7f70-4b30-a0c8-dd6e25affabd",       -- 转运器地址
+            inputSide = 3,                                               -- 输入原材料的箱子位置
             outputSide = 3,                                              -- 输出低耐久冷却单元的箱子位置
-            changeItemOutputSide = 1,                                    -- 输出枯竭燃料棒
-            tempSide = 2,                                                -- 堆加热的东西的箱子位置
+            changeItemOutputSide = 3,                                    -- 输出枯竭燃料棒
+            tempSide = 3,                                                -- 堆加热的东西的箱子位置
             energy = nil                                                 -- 是否参与电量控制,默认不填写或者为nil代表参与电量控制,只有在缺电时才会开启,设置为false则无视电量持续监测运行
         },
         {
-            scheme = "mox",                                              --模式
-            thresholdHeat = 9500,                                        -- 预热堆温
+            scheme = "slyb",                                             --模式
+            thresholdHeat = -1,                                          -- 预热堆温
             preheatItem = "gregtech:gt.reactorUraniumQuad",              -- 预热燃料
-            reactorChamberAddr = "5718cf3c-1789-41e2-9da3-f2d300e68749", -- 核电仓地址
+            reactorChamberAddr = "3ba763f9-5c55-4be9-8ccc-5f321f702b17", -- 核电仓地址
             reactorChamberSide = 4,                                      -- 核电仓方向
-            switchRedstone = "e0ce46c1-ca8d-4fbc-ab44-b9518d498044",     -- 开关核电的红石端口地址
-            reactorChamberSideToRS = 0,                                  -- 核电仓相对于红石信号器的方向
-            transforAddr = "3f34866d-9748-425b-a919-f8c893760954",       -- 转运器地址
-            inputSide = 0,                                               -- 输入原材料的箱子位置
+            switchRedstone = "49b24209-57c8-445d-8e9e-473fec29f3de",     -- 开关核电的红石端口地址
+            reactorChamberSideToRS = 4,                                  -- 核电仓相对于红石信号器的方向 旧版本更新的话默认填写nil即可会取{reactorChamberSide}的方向
+            transforAddr = "4a9956c3-7f70-4b30-a0c8-dd6e25affabd",       -- 转运器地址
+            inputSide = 3,                                               -- 输入原材料的箱子位置
             outputSide = 3,                                              -- 输出低耐久冷却单元的箱子位置
-            changeItemOutputSide = 1,                                    -- 输出枯竭燃料棒
-            tempSide = 2,                                                -- 堆加热的东西的箱子位置
+            changeItemOutputSide = 3,                                    -- 输出枯竭燃料棒
+            tempSide = 3,                                                -- 堆加热的东西的箱子位置
             energy = nil                                                 -- 是否参与电量控制,默认不填写或者为nil代表参与电量控制,只有在缺电时才会开启,设置为false则无视电量持续监测运行
         },
         {
-            scheme = "mox",                                              --模式
-            thresholdHeat = 9500,                                        -- 预热堆温
+            scheme = "slyb",                                             --模式
+            thresholdHeat = -1,                                          -- 预热堆温
             preheatItem = "gregtech:gt.reactorUraniumQuad",              -- 预热燃料
-            reactorChamberAddr = "79a482bf-4627-454c-b119-595f7944b97b", -- 核电仓地址
-            reactorChamberSide = 4,                                      -- 核电仓方向
-            switchRedstone = "f7e2f68f-fb13-407d-8f0b-b75edfcfd588",     -- 开关核电的红石端口地址
-            reactorChamberSideToRS = 1,                                  -- 核电仓相对于红石信号器的方向
-            transforAddr = "d435507f-7973-4fbb-a107-4ebf448cf314",       -- 转运器地址
-            inputSide = 0,                                               -- 输入原材料的箱子位置
+            reactorChamberAddr = "3a2fa58e-b862-4df5-ae99-b67e13fea876", -- 核电仓地址
+            reactorChamberSide = 0,                                      -- 核电仓方向
+            switchRedstone = "49b24209-57c8-445d-8e9e-473fec29f3de",     -- 开关核电的红石端口地址
+            reactorChamberSideToRS = 0,                                  -- 核电仓相对于红石信号器的方向 旧版本更新的话默认填写nil即可会取{reactorChamberSide}的方向
+            transforAddr = "4a9956c3-7f70-4b30-a0c8-dd6e25affabd",       -- 转运器地址
+            inputSide = 3,                                               -- 输入原材料的箱子位置
             outputSide = 3,                                              -- 输出低耐久冷却单元的箱子位置
-            changeItemOutputSide = 1,                                    -- 输出枯竭燃料棒
-            tempSide = 2,                                                -- 堆加热的东西的箱子位置
+            changeItemOutputSide = 3,                                    -- 输出枯竭燃料棒
+            tempSide = 3,                                                -- 堆加热的东西的箱子位置
             energy = nil                                                 -- 是否参与电量控制,默认不填写或者为nil代表参与电量控制,只有在缺电时才会开启,设置为false则无视电量持续监测运行
         },
         {
-            scheme = "mox",                                              --模式
-            thresholdHeat = 9500,                                        -- 预热堆温
+            scheme = "slyb",                                             --模式
+            thresholdHeat = -1,                                          -- 预热堆温
             preheatItem = "gregtech:gt.reactorUraniumQuad",              -- 预热燃料
-            reactorChamberAddr = "1eb88227-0c91-440d-bc27-ef2918f832e0", -- 核电仓地址
-            reactorChamberSide = 4,                                      -- 核电仓方向
-            switchRedstone = "0d904402-9be5-49d9-8b90-62bc8f31ddf5",     -- 开关核电的红石端口地址
-            reactorChamberSideToRS = 0,                                  -- 核电仓相对于红石信号器的方向
-            transforAddr = "930f1cce-8088-4cdd-8a10-25fa2df0fb7a",       -- 转运器地址
-            inputSide = 0,                                               -- 输入原材料的箱子位置
+            reactorChamberAddr = "9b49cef2-44e8-42b8-8ac8-e8e91223de01", -- 核电仓地址
+            reactorChamberSide = 5,                                      -- 核电仓方向
+            switchRedstone = "49b24209-57c8-445d-8e9e-473fec29f3de",     -- 开关核电的红石端口地址
+            reactorChamberSideToRS = 5,                                  -- 核电仓相对于红石信号器的方向 旧版本更新的话默认填写nil即可会取{reactorChamberSide}的方向
+            transforAddr = "4a9956c3-7f70-4b30-a0c8-dd6e25affabd",       -- 转运器地址
+            inputSide = 3,                                               -- 输入原材料的箱子位置
             outputSide = 3,                                              -- 输出低耐久冷却单元的箱子位置
-            changeItemOutputSide = 1,                                    -- 输出枯竭燃料棒
-            tempSide = 2,                                                -- 堆加热的东西的箱子位置
+            changeItemOutputSide = 3,                                    -- 输出枯竭燃料棒
+            tempSide = 3,                                                -- 堆加热的东西的箱子位置
             energy = nil                                                 -- 是否参与电量控制,默认不填写或者为nil代表参与电量控制,只有在缺电时才会开启,设置为false则无视电量持续监测运行
-        },
-        {
-            scheme = "mox",                                              --模式
-            thresholdHeat = 9500,                                        -- 预热堆温
-            preheatItem = "gregtech:gt.reactorUraniumQuad",              -- 预热燃料
-            reactorChamberAddr = "3dd59913-8c21-4dc4-8395-805d5a40ef6b", -- 核电仓地址
-            reactorChamberSide = 4,                                      -- 核电仓方向
-            switchRedstone = "6b6b213b-1d63-4c2f-8c84-0386f212b782",     -- 开关核电的红石端口地址
-            reactorChamberSideToRS = 1,                                  -- 核电仓相对于红石信号器的方向
-            transforAddr = "704597b2-573a-4ac3-900e-f695ef214963",       -- 转运器地址
-            inputSide = 0,                                               -- 输入原材料的箱子位置
-            outputSide = 3,                                              -- 输出低耐久冷却单元的箱子位置
-            changeItemOutputSide = 1,                                    -- 输出枯竭燃料棒
-            tempSide = 2,                                                -- 堆加热的东西的箱子位置
-            energy = nil                                                 -- 是否参与电量控制,默认不填写或者为nil代表参与电量控制,只有在缺电时才会开启,设置为false则无视电量持续监测运行
-        },
+        }
     }
 }

@@ -169,7 +169,7 @@ local function checkItemChangeName(cfgResource, rc)
         end
         -- 是否为空位
         if rcBox[boxSlot - 1].name == nil then
-            stopReactorChamberByRc(rc)
+            stopReactorChamberByRc(rc, true)
             insert(rc.transforAddr, rc.inputSide, boxSlot, rc.reactorChamberSide, cfgResource.name, -1)
         end
         ::continue::
@@ -201,9 +201,9 @@ local function checkItemDmg(cfgResource, rc)
         end
         ::continue::
 
-        if i % 9 == 0 then
-            coroutine.yield()
-        end
+        -- if i % 9 == 0 then
+        --     coroutine.yield()
+        -- end
     end
 end
 
