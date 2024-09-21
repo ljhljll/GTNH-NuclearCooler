@@ -77,7 +77,11 @@ local function insert(transforAddr, sourceSide, targetSlot, outputSide, name, dm
     end
 end
 
-local function startReactorChamber(rc)
+local function startReactorChamber(rc, isBlock)
+    if isBlock == nil then
+        isBlock = true
+    end
+
     local rcRedstone = component.proxy(rc.switchRedstone)
     if rcRedstone.getOutput(rc.reactorChamberSideToRS) > 0 then
         return
@@ -96,7 +100,13 @@ local function startReactorChamber(rc)
     end
     rc.running = true
     rcRedstone.setOutput(rc.reactorChamberSideToRS, 15)
-    print(rc.name .. " is running")
+
+    repeat
+        coroutine.yield()
+        local singal = rcRedstone.getOutput(rc.reactorChamberSideToRS)
+    until (singal > 0)
+
+    print(rc.reactorChamberAddr .. " is running")
 end
 
 local function preheatRc(rc)
@@ -181,14 +191,14 @@ local function checkItemChangeName(cfgResource, rc)
         end
         -- 是否为空位
         if rcBox[boxSlot - 1].name == nil then
-            stopReactorChamberByRc(rc)
+            stopReactorChamberByRc(rc, true)
             insert(rc.transforAddr, rc.inputSide, boxSlot, rc.reactorChamberSide, cfgResource.name, -1)
         end
         ::continue::
 
-        if i % 9 == 0 then
-            coroutine.yield()
-        end
+        -- if i % 9 == 0 then
+        --     coroutine.yield()
+        -- end
     end
 end
 
@@ -213,9 +223,9 @@ local function checkItemDmg(cfgResource, rc)
         end
         ::continue::
 
-        if i % 9 == 0 then
-            coroutine.yield()
-        end
+        -- if i % 9 == 0 then
+        --     coroutine.yield()
+        -- end
     end
 end
 

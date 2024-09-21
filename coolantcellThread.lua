@@ -27,7 +27,6 @@ local function runningReactorChamber(rc)
         if canCheck then
             local scheme = config.scheme[rc.scheme]
             action.checkReactorChamberDMG(rc, scheme)
-            coroutine.yield()
             action.startReactorChamber(rc)
         end
         coroutine.yield()
