@@ -2,6 +2,7 @@ local component = require("component")
 local database = require("database")
 local config = require("config")
 local coroutine = require("coroutine")
+local computer = require("computer")
 
 local function coroutineSleep(time)
     local DDL = computer.uptime() + time 
@@ -100,12 +101,14 @@ local function startReactorChamber(rc, isBlock)
     rc.running = true
     rcRedstone.setOutput(rc.reactorChamberSideToRS, 15)
 
-    repeat
-        coroutine.yield()
-        local singal = rcRedstone.getOutput(rc.reactorChamberSideToRS)
-    until (singal > 0)
+    if isBlock then
+        repeat
+            coroutine.yield()
+            local singal = rcRedstone.getOutput(rc.reactorChamberSideToRS)
+        until (singal > 0)
+    end
 
-    print(rc.reactorChamberAddr .. " is running")
+    print(rc.name .. " is running")
 end
 
 local function preheatRc(rc)
