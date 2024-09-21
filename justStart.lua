@@ -19,8 +19,12 @@ end
 local function printOverHeated(rcTable)
     for i = 1, #rcTable do
         local rc = database.reactorChambers[rcTable[i]]
+        local rcComponent = component.proxy(rc.reactorChamberAddr)
+        local heat = rcComponent.getHeat()
         if rc.aborted then 
-            print(stirng.format("Error : %s is aborted due to over-heated", rc.name))
+            print(stirng.format("The heat of %s is %d K, it is aborted due to over-heated", rc.name, heat))
+        else
+            print(string.format("The heat of %s is %d K", rc.name, heat))
         end
     end
 end
