@@ -5,6 +5,7 @@ local detection = require("coolantcellThread")
 local config = require("config")
 local coroutine = require("coroutine")
 local computer = require("computer")
+local component = require("component")
 
 local function printResidentMessages()
     local time = computer.uptime()
