@@ -3,6 +3,13 @@ local database = require("database")
 local config = require("config")
 local coroutine = require("coroutine")
 
+local function coroutineSleep(time)
+    local DDL = computer.uptime() + time 
+    while computer.uptime() < DDL do 
+        coroutine.yield()
+    end
+end
+
 local function checkItemCount(runningTable)
     for i = 1, #runningTable, 1 do
         local rc = database.reactorChambers[runningTable[i]]
@@ -35,7 +42,7 @@ local function stopReactorChamberByRc(rc, isBlock)
     if isBlock then
         -- 确保反应堆先停机再继续运行
         repeat
-            coroutine.yield()
+            coroutineSleep(0.5)
             local singal = redstone.getOutput(rc.reactorChamberSideToRS)
         until (singal == 0)
     end
@@ -89,14 +96,6 @@ local function startReactorChamber(rc, isBlock)
     if rc.aborted then
         print(string.format("%s was over-heated, it cannot start. You can manually cooldown it and then restart the program.", rc.name))
         return
-        -- local heat = rcComponent.getHeat()
-        -- if heat > rc.thresholdHeat then
-        --     print(string.format("%s is over-heated, it cannot start. You can cooldown it ant it could restart later.", rc.name))
-        --     return
-        -- else 
-        --     rc.aborted = false
-        --     print(string.format("%s is recovering from over-heated, it is restarting.", rc.name))
-        -- end
     end
     rc.running = true
     rcRedstone.setOutput(rc.reactorChamberSideToRS, 15)
@@ -195,10 +194,6 @@ local function checkItemChangeName(cfgResource, rc)
             insert(rc.transforAddr, rc.inputSide, boxSlot, rc.reactorChamberSide, cfgResource.name, -1)
         end
         ::continue::
-
-        -- if i % 9 == 0 then
-        --     coroutine.yield()
-        -- end
     end
 end
 
@@ -222,10 +217,6 @@ local function checkItemDmg(cfgResource, rc)
             insert(rc.transforAddr, rc.inputSide, boxSlot, rc.reactorChamberSide, cfgResource.name, -1)
         end
         ::continue::
-
-        -- if i % 9 == 0 then
-        --     coroutine.yield()
-        -- end
     end
 end
 
@@ -240,12 +231,12 @@ local function checkReactorChamberDMG(rc, scheme)
         if scheme.resource[i].changeName ~= -1 then
             checkItemChangeName(scheme.resource[i], rc)
         end
-
         ::continue::
     end
 end
 
 return {
+    coroutineSleep = coroutineSleep,
     checkItemCount = checkItemCount,
     insertItemsIntoReactorChamber = insertItemsIntoReactorChamber,
     stopAllReactorChamber = stopAllReactorChamber,

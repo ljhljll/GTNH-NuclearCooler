@@ -4,11 +4,11 @@ local thread = require("thread")
 local detection = require("coolantcellThread")
 local config = require("config")
 local coroutine = require("coroutine")
--- local term = require("term")
+local computer = require("computer")
 local component = require("component")
 
 local function printResidentMessages()
-    local time = os.clock()
+    local time = computer.uptime()
     local diffSeconds = math.floor((time - database.startTimeStamp)*100)
     local days = math.floor(diffSeconds / 86400)
     local hours = math.floor((diffSeconds %  86400) / 3600)
@@ -36,9 +36,10 @@ local function clearAndIntervalMessages(rcTable)
         cleatLogInterval = 5
     end
     while true do
-        for i = 1, (cleatLogInterval * 10) do
-            coroutine.yield()
-        end
+        action.coroutineSleep(cleatLogInterval)
+        -- for i = 1, (cleatLogInterval * 10) do
+        --     coroutine.yield()
+        -- end
         os.execute("cls")
         coroutine.yield()
         printResidentMessages()
@@ -140,7 +141,7 @@ local function justStart()
         table.insert(runningTable, tonumber(index))
     end
 
-    database.startTimeStamp = os.clock()
+    database.startTimeStamp = computer.uptime()
 
     if model == "1" then
         action.insertItemsIntoReactorChamber(runningTable)
