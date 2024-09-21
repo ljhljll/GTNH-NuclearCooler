@@ -101,7 +101,7 @@ local function reactorChamberStart(rcTable)
         if not database.getGlobalRedstone() then
             break;
         end
-        os.sleep(0) -- 协程内部不sleep，这里统一Sleep，控制到10tps
+        os.sleep(0) -- 能有多快就有多快好吧
     end
     -- 所有关闭反应堆
     local stop_coroutines = {}
