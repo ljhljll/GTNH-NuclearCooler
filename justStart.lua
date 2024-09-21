@@ -22,7 +22,7 @@ local function printOverHeated(rcTable)
         local rcComponent = component.proxy(rc.reactorChamberAddr)
         local heat = rcComponent.getHeat()
         if rc.aborted then 
-            print(stirng.format("The heat of %s is %d K, it is aborted due to over-heated", rc.name, heat))
+            print(string.format("The heat of %s is %d K, it is aborted due to over-heated", rc.name, heat))
         else
             print(string.format("The heat of %s is %d K", rc.name, heat))
         end
