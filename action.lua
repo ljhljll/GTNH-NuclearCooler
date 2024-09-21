@@ -77,7 +77,11 @@ local function insert(transforAddr, sourceSide, targetSlot, outputSide, name, dm
     end
 end
 
-local function startReactorChamber(rc)
+local function startReactorChamber(rc, isBlock)
+    if isBlock == nil then
+        isBlock = true
+    end
+
     local rcRedstone = component.proxy(rc.switchRedstone)
     if rcRedstone.getOutput(rc.reactorChamberSideToRS) > 0 then
         return
