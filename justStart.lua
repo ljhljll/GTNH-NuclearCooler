@@ -9,7 +9,7 @@ local component = require("component")
 
 local function printResidentMessages()
     local time = computer.uptime()
-    local diffSeconds = math.floor((time - database.startTimeStamp)*100)
+    local diffSeconds = math.floor(time - database.startTimeStamp)
     local days = math.floor(diffSeconds / 86400)
     local hours = math.floor((diffSeconds %  86400) / 3600)
     local minutes = math.floor((diffSeconds % 3600) / 60)
@@ -46,7 +46,7 @@ local function clearAndIntervalMessages(rcTable)
         coroutine.yield()
         printOverHeated(rcTable)
         coroutine.yield()
-        print(string.format("下一次清屏计划在 %d tick(s) 后 (主控程序期望tps=10)", cleatLogInterval * 10))
+        print(string.format("下一次清屏计划在 %d 秒后", cleatLogInterval))
     end
 end
 
