@@ -84,6 +84,12 @@ local function startReactorChamber(rc)
     end
     rc.running = true
     rcRedstone.setOutput(rc.reactorChamberSideToRS, 15)
+
+    repeat
+        coroutine.yield()
+        local singal = rcRedstone.getOutput(rc.reactorChamberSideToRS)
+    until (singal > 0)
+
     print(rc.reactorChamberAddr .. " is running")
 end
 
@@ -174,9 +180,9 @@ local function checkItemChangeName(cfgResource, rc)
         end
         ::continue::
 
-        if i % 9 == 0 then
-            coroutine.yield()
-        end
+        -- if i % 9 == 0 then
+        --     coroutine.yield()
+        -- end
     end
 end
 
