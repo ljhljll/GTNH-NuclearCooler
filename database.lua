@@ -2,6 +2,7 @@ local component = require("component")
 local config = require("config")
 local globalRedstoneSide = nil
 local reactorChambers = {}
+local startTimeStamp = nil
 
 local function getGlobalRedstoneSide()
     return globalRedstoneSide
@@ -35,6 +36,10 @@ local function scanAdaptor()
         if reactorChambers[i].reactorChamberSideToRS == nil then -- 如果没有配置这个，使用和转运器一样的方向设置，这是为了兼容ljhljll/GTNH-NuclearCooler的行为
             reactorChambers[i].reactorChamberSideToRS = reactorChambers[i].reactorChamberSide
         end
+        if reactorChambers[i].name == nil then -- 保持对旧版的兼容，没有name就用地址作为名字
+            reactorChambers[i].name = reactorChambers[i].reactorChamberAddr
+        end
+        reactorChambers[i].aborted = false -- 如果因为堆温失控等原因导致停机，把这个标记设置为true
         print("配置" ..
             i ..
             "使用模式:" ..
@@ -47,5 +52,6 @@ end
 return {
     scanAdaptor = scanAdaptor,
     reactorChambers = reactorChambers,
-    getGlobalRedstone = getGlobalRedstone
+    getGlobalRedstone = getGlobalRedstone,
+    startTimeStamp = startTimeStamp
 }

@@ -2,6 +2,14 @@ local component = require("component")
 local database = require("database")
 local config = require("config")
 local coroutine = require("coroutine")
+local computer = require("computer")
+
+local function coroutineSleep(time)
+    local DDL = computer.uptime() + time 
+    while computer.uptime() < DDL do 
+        coroutine.yield()
+    end
+end
 
 local function checkItemCount(runningTable)
     for i = 1, #runningTable, 1 do
@@ -17,7 +25,7 @@ local function checkItemCount(runningTable)
                 if num >= resource[j].count then break end
             end
             if num < resource[j].count then
-                print(rc.reactorChamberAddr .. "所需的材料:" .. resource[j].name .. "小于" .. resource[j].count)
+                print(rc.name .. "所需的材料:" .. resource[j].name .. "小于" .. resource[j].count)
                 os.exit(0)
             end
         end
@@ -35,11 +43,11 @@ local function stopReactorChamberByRc(rc, isBlock)
     if isBlock then
         -- 确保反应堆先停机再继续运行
         repeat
-            coroutine.yield()
+            coroutineSleep(0.5)
             local singal = redstone.getOutput(rc.reactorChamberSideToRS)
         until (singal == 0)
     end
-    print(rc.reactorChamberAddr .. " is shutdown")
+    print(rc.name .. " is shutdown")
 end
 
 local function stopAllReactorChamber(isBlock)
@@ -77,20 +85,30 @@ local function insert(transforAddr, sourceSide, targetSlot, outputSide, name, dm
     end
 end
 
-local function startReactorChamber(rc)
+local function startReactorChamber(rc, isBlock)
+    if isBlock == nil then
+        isBlock = true
+    end
+
     local rcRedstone = component.proxy(rc.switchRedstone)
     if rcRedstone.getOutput(rc.reactorChamberSideToRS) > 0 then
+        return
+    end
+    if rc.aborted then
+        print(string.format("%s was over-heated, it cannot start. You can manually cooldown it and then restart the program.", rc.name))
         return
     end
     rc.running = true
     rcRedstone.setOutput(rc.reactorChamberSideToRS, 15)
 
-    repeat
-        coroutine.yield()
-        local singal = rcRedstone.getOutput(rc.reactorChamberSideToRS)
-    until (singal > 0)
+    if isBlock then
+        repeat
+            coroutine.yield()
+            local singal = rcRedstone.getOutput(rc.reactorChamberSideToRS)
+        until (singal > 0)
+    end
 
-    print(rc.reactorChamberAddr .. " is running")
+    print(rc.name .. " is running")
 end
 
 local function preheatRc(rc)
@@ -119,7 +137,7 @@ local function insertItemsIntoReactorChamber(runningTable)
 
         if rc.thresholdHeat ~= -1 then
             preheatRc(rc)
-            print(rc.reactorChamberAddr .. " 预热完成")
+            print(rc.name .. " 预热完成")
         end
 
         for i = 1, #resource do
@@ -140,7 +158,7 @@ local function insertItemsIntoReactorChamber(runningTable)
                 end
             end
         end
-        print(string.format("完成了对核反应堆 %s 的初次材料转移", rc.reactorChamberAddr))
+        print(string.format("完成了对核反应堆 %s 的初次材料转移", rc.name))
     end
 end
 
@@ -179,10 +197,6 @@ local function checkItemChangeName(cfgResource, rc)
             insert(rc.transforAddr, rc.inputSide, boxSlot, rc.reactorChamberSide, cfgResource.name, -1)
         end
         ::continue::
-
-        -- if i % 9 == 0 then
-        --     coroutine.yield()
-        -- end
     end
 end
 
@@ -206,10 +220,6 @@ local function checkItemDmg(cfgResource, rc)
             insert(rc.transforAddr, rc.inputSide, boxSlot, rc.reactorChamberSide, cfgResource.name, -1)
         end
         ::continue::
-
-        -- if i % 9 == 0 then
-        --     coroutine.yield()
-        -- end
     end
 end
 
@@ -224,12 +234,12 @@ local function checkReactorChamberDMG(rc, scheme)
         if scheme.resource[i].changeName ~= -1 then
             checkItemChangeName(scheme.resource[i], rc)
         end
-
         ::continue::
     end
 end
 
 return {
+    coroutineSleep = coroutineSleep,
     checkItemCount = checkItemCount,
     insertItemsIntoReactorChamber = insertItemsIntoReactorChamber,
     stopAllReactorChamber = stopAllReactorChamber,

@@ -4,15 +4,73 @@ local thread = require("thread")
 local detection = require("coolantcellThread")
 local config = require("config")
 local coroutine = require("coroutine")
+local computer = require("computer")
+local component = require("component")
+
+local function printResidentMessages()
+    local time = computer.uptime()
+    local diffSeconds = math.floor(time - database.startTimeStamp)
+    local days = math.floor(diffSeconds / 86400)
+    local hours = math.floor((diffSeconds %  86400) / 3600)
+    local minutes = math.floor((diffSeconds % 3600) / 60)
+    print(string.format("本核电站已安全运行 %d 天 %d 时 %d 分。道路千万条，安全第一条；核电不规范，回档两行泪。", days, hours, minutes))
+end
+
+local function printOverHeated(rcTable)
+    for i = 1, #rcTable do
+        local rc = database.reactorChambers[rcTable[i]]
+        local rcComponent = component.proxy(rc.reactorChamberAddr)
+        local heat = rcComponent.getHeat()
+        if rc.aborted then 
+            print(string.format("The heat of %s is %d K, it is aborted due to over-heated", rc.name, heat))
+        else
+            print(string.format("The heat of %s is %d K", rc.name, heat))
+        end
+    end
+end
 
 -- 清理控制台打印信息，防止内存溢出
-local function clearCommandInterval()
-    while (true) do
-        for i = 1, (config.cleatLogInterval * 10) do
+local function clearAndIntervalMessages(rcTable)
+    cleatLogInterval = config.cleatLogInterval
+    if cleatLogInterval < 5 then
+        cleatLogInterval = 5
+    end
+    while true do
+        action.coroutineSleep(cleatLogInterval)
+        -- for i = 1, (cleatLogInterval * 10) do
+        --     coroutine.yield()
+        -- end
+        os.execute("cls")
+        coroutine.yield()
+        printResidentMessages()
+        coroutine.yield()
+        printOverHeated(rcTable)
+        coroutine.yield()
+        print(string.format("下一次清屏计划在 %d 秒后", cleatLogInterval))
+    end
+end
+
+-- 温度监控器，过热强制关机避免爆炸
+local function heatMonitor(rcTable)
+    while true do
+        for i = 1, #rcTable do 
+            local rc = database.reactorChambers[rcTable[i]]
+            if rc.scheme == "mox" and not rc.aborted then 
+                local rcComponent = component.proxy(rc.reactorChamberAddr)
+                local heat = rcComponent.getHeat()
+                if heat >= rc.thresholdHeat + 100 or heat >= 9960 then 
+                    rc.aborted = true
+                    action.stopReactorChamberByRc(rc, false)
+                end
+            end
             coroutine.yield()
         end
-        os.execute("cls")
-        print(string.format("下一次清屏计划在 %d 秒后", config.cleatLogInterval))
+        coroutine.yield()
+        coroutine.yield() -- update: 大幅度提高检测频率
+        coroutine.yield()
+        -- for i = 1,10 do 
+        --     coroutine.yield() -- 间隔10tick再做下一轮检查
+        -- end
     end
 end
 
@@ -26,7 +84,12 @@ local function reactorChamberStart(rcTable)
             detection.runningReactorChamber(database.reactorChambers[rcTable[i]])
         end)
     end
-    coroutines[#coroutines + 1] = coroutine.create(clearCommandInterval)
+    coroutines[#coroutines + 1] = coroutine.create(function()
+        clearAndIntervalMessages(rcTable)
+    end)
+    coroutines[#coroutines + 1] = coroutine.create(function() 
+        heatMonitor(rcTable)
+    end)
     while true do
         for i = 1, #coroutines do
             if coroutine.status(coroutines[i]) ~= "dead" then
@@ -39,7 +102,7 @@ local function reactorChamberStart(rcTable)
         if not database.getGlobalRedstone() then
             break;
         end
-        os.sleep(0) -- 协程内部不sleep，这里统一Sleep，控制到10tps
+        os.sleep(0) -- 能有多快就有多快好吧
     end
     -- 所有关闭反应堆
     local stop_coroutines = {}
@@ -77,6 +140,8 @@ local function justStart()
     for index in choicesNum:gmatch("%d+") do
         table.insert(runningTable, tonumber(index))
     end
+
+    database.startTimeStamp = computer.uptime()
 
     if model == "1" then
         action.insertItemsIntoReactorChamber(runningTable)
