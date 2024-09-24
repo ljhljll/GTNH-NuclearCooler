@@ -1,6 +1,15 @@
 local component = require("component")
 local database = require("database")
 local config = require("config")
+local coroutine = require("coroutine")
+local computer = require("computer")
+
+local function coroutineSleep(time)
+    local DDL = computer.uptime() + time 
+    while computer.uptime() < DDL do 
+        coroutine.yield()
+    end
+end
 
 local function checkItemCount(runningTable)
     for i = 1, #runningTable, 1 do
@@ -13,11 +22,10 @@ local function checkItemCount(runningTable)
                 if item.name and item.name == resource[j].name then
                     num = num + item.size
                 end
-
                 if num >= resource[j].count then break end
             end
             if num < resource[j].count then
-                print(rc.reactorChamberAddr .. "所需的材料:" .. resource[j].name .. "小于" .. resource[j].count)
+                print(rc.name .. "所需的材料:" .. resource[j].name .. "小于" .. resource[j].count)
                 os.exit(0)
             end
         end
@@ -26,20 +34,19 @@ end
 
 local function stopReactorChamberByRc(rc, isBlock)
     local redstone = component.proxy(rc.switchRedstone)
-    if redstone.getOutput(rc.reactorChamberSide) == 0 then
+    if redstone.getOutput(rc.reactorChamberSideToRS) == 0 then
         return
     end
     rc.running = false
     -- setOutput为非直接调用，其正确输出对应的红石信号需要至少1tick时间
-    redstone.setOutput(rc.reactorChamberSide, 0)
+    redstone.setOutput(rc.reactorChamberSideToRS, 0)
     if isBlock then
         repeat
-            -- 确保反应堆先停机再继续运行
-            os.sleep(0)
-            local singal = redstone.getOutput(rc.reactorChamberSide)
+            coroutineSleep(0.5)
+            local singal = redstone.getOutput(rc.reactorChamberSideToRS)
         until (singal == 0)
     end
-    print(rc.reactorChamberAddr .. " is shutdown")
+    print(rc.name .. " is shutdown")
 end
 
 local function stopAllReactorChamber(isBlock)
@@ -54,8 +61,8 @@ local function remove(transforAddr, sourceSide, slot, outpuSide)
         local removeCount = transposer.transferItem(sourceSide, outpuSide, 1, slot)
         if removeCount == 0 then
             print("箱子已满,无法输出物品")
-            os.sleep(0)
         end
+        coroutine.yield()
     until (removeCount > 0)
 end
 
@@ -70,31 +77,49 @@ local function insert(transforAddr, sourceSide, targetSlot, outputSide, name, dm
                     return
                 end
             end
-            os.sleep(0)
         end
         sourceBox = nil
         print("材料箱未找到物品:" .. name)
-        os.sleep(0)
+        coroutine.yield()
     end
 end
 
-local function startReactorChamber(rc)
+local function startReactorChamber(rc, isBlock)
+    if isBlock == nil then
+        isBlock = true
+    end
+
     local rcRedstone = component.proxy(rc.switchRedstone)
-    if rcRedstone.getOutput(rc.reactorChamberSide) > 0 then
+    if rcRedstone.getOutput(rc.reactorChamberSideToRS) > 0 then
+        return
+    end
+    if rc.aborted then
+        print(string.format("%s was over-heated, it cannot start. You can manually cooldown it and then restart the program.", rc.name))
         return
     end
     rc.running = true
-    rcRedstone.setOutput(rc.reactorChamberSide, 15)
-    print(rc.reactorChamberAddr .. " is running")
+    rcRedstone.setOutput(rc.reactorChamberSideToRS, 15)
+
+    if isBlock then
+        repeat
+            coroutine.yield()
+            local singal = rcRedstone.getOutput(rc.reactorChamberSideToRS)
+        until (singal > 0)
+    end
+
+    print(rc.name .. " is running")
 end
 
 local function preheatRc(rc)
     local rcComponent = component.proxy(rc.reactorChamberAddr)
     if rcComponent.getHeat() >= rc.thresholdHeat then return true end
     insert(rc.transforAddr, rc.tempSide, 1, rc.reactorChamberSide, rc.preheatItem, -1)
-    startReactorChamber(rc)
+    startReactorChamber(rc, false)
     repeat
         local heat = rcComponent.getHeat()
+        if not database.getGlobalRedstone() then
+            break
+        end
     until (heat >= rc.thresholdHeat)
     stopReactorChamberByRc(rc, true)
     remove(rc.transforAddr, rc.reactorChamberSide, 1, rc.tempSide)
@@ -103,15 +128,15 @@ end
 -- 向核电仓中转移原材料
 local function insertItemsIntoReactorChamber(runningTable)
     checkItemCount(runningTable)
-    for i = 1, #runningTable, 1 do
-        local rc = database.reactorChambers[runningTable[i]]
+    for k = 1, #runningTable, 1 do -- 原先这里是for i = 1, #runningTable, 1 do，内促内循环还有一个循环变量i，容易出问题
+        local rc = database.reactorChambers[runningTable[k]]
         local transposer = component.proxy(rc.transforAddr)
         local sourceBoxitemList = transposer.getAllStacks(rc.inputSide).getAll()
         local resource = config.scheme[rc.scheme].resource
 
         if rc.thresholdHeat ~= -1 then
             preheatRc(rc)
-            print(rc.reactorChamberAddr .. " 预热完成")
+            print(rc.name .. " 预热完成")
         end
 
         for i = 1, #resource do
@@ -132,6 +157,7 @@ local function insertItemsIntoReactorChamber(runningTable)
                 end
             end
         end
+        print(string.format("完成了对核反应堆 %s 的初次材料转移", rc.name))
     end
 end
 
@@ -166,7 +192,7 @@ local function checkItemChangeName(cfgResource, rc)
         end
         -- 是否为空位
         if rcBox[boxSlot - 1].name == nil then
-            stopReactorChamberByRc(rc)
+            stopReactorChamberByRc(rc, true)
             insert(rc.transforAddr, rc.inputSide, boxSlot, rc.reactorChamberSide, cfgResource.name, -1)
         end
         ::continue::
@@ -189,7 +215,7 @@ local function checkItemDmg(cfgResource, rc)
         end
         -- 是否为空位
         if rcBox[boxSlot - 1].damage == nil then
-            stopReactorChamberByRc(rc)
+            stopReactorChamberByRc(rc, true)
             insert(rc.transforAddr, rc.inputSide, boxSlot, rc.reactorChamberSide, cfgResource.name, -1)
         end
         ::continue::
@@ -207,13 +233,12 @@ local function checkReactorChamberDMG(rc, scheme)
         if scheme.resource[i].changeName ~= -1 then
             checkItemChangeName(scheme.resource[i], rc)
         end
-
         ::continue::
     end
 end
 
-
 return {
+    coroutineSleep = coroutineSleep,
     checkItemCount = checkItemCount,
     insertItemsIntoReactorChamber = insertItemsIntoReactorChamber,
     stopAllReactorChamber = stopAllReactorChamber,

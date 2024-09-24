@@ -3,46 +3,126 @@ local action = require("action")
 local thread = require("thread")
 local detection = require("coolantcellThread")
 local config = require("config")
+local coroutine = require("coroutine")
+local computer = require("computer")
+local component = require("component")
 
--- 清理控制台打印信息，防止内存溢出
-local function clearCommandInterval()
-    while (true) do
-        for i = 1, config.cleatLogInterval, 1 do
-            if not database.getGlobalRedstone() then
-                goto stopClear
-            end
-            os.sleep(1)
-        end
-        os.execute("cls")
-    end
-    ::stopClear::
+local function printResidentMessages()
+    local time = computer.uptime()
+    local diffSeconds = math.floor(time - database.startTimeStamp)
+    local days = math.floor(diffSeconds / 86400)
+    local hours = math.floor((diffSeconds %  86400) / 3600)
+    local minutes = math.floor((diffSeconds % 3600) / 60)
+    print(string.format("本核电站已安全运行 %d 天 %d 时 %d 分。道路千万条，安全第一条；核电不规范，回档两行泪。", days, hours, minutes))
 end
 
-local function shutdownThread(threads)
-    while true do
-        if not database.getGlobalRedstone() then
-            break;
+local function printOverHeated(rcTable)
+    for i = 1, #rcTable do
+        local rc = database.reactorChambers[rcTable[i]]
+        local rcComponent = component.proxy(rc.reactorChamberAddr)
+        local heat = rcComponent.getHeat()
+        if rc.aborted then 
+            print(string.format("The heat of %s is %d K, it is aborted due to over-heated", rc.name, heat))
+        else
+            print(string.format("The heat of %s is %d K", rc.name, heat))
         end
-        os.sleep(0)
     end
-    for i = 1, #threads, 1 do
-        threads[i]:kill()
-        if i <= #threads - 1 then
-            action.stopReactorChamberByRc(database.reactorChambers[i], true)
+end
+
+-- 清理控制台打印信息，防止内存溢出
+local function clearAndIntervalMessages(rcTable)
+    cleatLogInterval = config.cleatLogInterval
+    if cleatLogInterval < 5 then
+        cleatLogInterval = 5
+    end
+    while true do
+        action.coroutineSleep(cleatLogInterval)
+        os.execute("cls")
+        coroutine.yield()
+        printResidentMessages()
+        coroutine.yield()
+        printOverHeated(rcTable)
+        coroutine.yield()
+        print(string.format("下一次清屏计划在 %d 秒后", cleatLogInterval))
+
+    end
+end
+
+-- 温度监控器，过热强制关机避免爆炸
+local function heatMonitor(rcTable)
+    while true do
+        for i = 1, #rcTable do 
+            local rc = database.reactorChambers[rcTable[i]]
+            if rc.scheme == "mox" and not rc.aborted then 
+                local rcComponent = component.proxy(rc.reactorChamberAddr)
+                local heat = rcComponent.getHeat()
+                if heat >= rc.thresholdHeat + 100 or heat >= 9960 then 
+                    rc.aborted = true
+                    action.stopReactorChamberByRc(rc, false)
+                end
+            end
+            coroutine.yield()
         end
+        coroutine.yield()
+        coroutine.yield() -- update: 大幅度提高检测频率
+        coroutine.yield()
+        -- for i = 1,10 do 
+        --     coroutine.yield() -- 间隔10tick再做下一轮检查
+        -- end
     end
 end
 
 local function reactorChamberStart(rcTable)
     os.execute("cls")
-    local threads = {}
+    -- local threads = {}
+    local coroutines = {}
 
     for i = 1, #rcTable do
-        threads[i] = thread.create(detection.runningReactorChamber, database.reactorChambers[rcTable[i]])
+        coroutines[i] = coroutine.create(function()
+            detection.runningReactorChamber(database.reactorChambers[rcTable[i]])
+        end)
     end
-    threads[#threads + 1] = thread.create(clearCommandInterval)
-    threads[#threads + 1] = thread.create(shutdownThread, threads)
-    thread.waitForAll(threads)
+    coroutines[#coroutines + 1] = coroutine.create(function()
+        clearAndIntervalMessages(rcTable)
+    end)
+    coroutines[#coroutines + 1] = coroutine.create(function() 
+        heatMonitor(rcTable)
+    end)
+    while true do
+        for i = 1, #coroutines do
+            if coroutine.status(coroutines[i]) ~= "dead" then
+                local status, err = coroutine.resume(coroutines[i])
+                if not status then
+                    print("Error in coroutine " .. i .. ": " .. err)
+                end
+            end
+        end
+        if not database.getGlobalRedstone() then
+            break;
+        end
+        os.sleep(0) -- 能有多快就有多快好吧
+    end
+    -- 所有关闭反应堆
+    local stop_coroutines = {}
+    for i = 1, #rcTable do
+        stop_coroutines[i] = coroutine.create(function()
+            action.stopReactorChamberByRc(database.reactorChambers[rcTable[i]], true)
+        end)
+    end
+
+    while true do
+        local stopped_count = 0
+        for i = 1, #rcTable do
+            local status, err = coroutine.resume(stop_coroutines[i]);
+            if not status then
+                stopped_count = stopped_count + 1
+            end
+        end
+        if stopped_count == #rcTable then
+            break
+        end
+    end
+
     print("核反应堆已关闭")
 end
 
@@ -59,6 +139,8 @@ local function justStart()
         table.insert(runningTable, tonumber(index))
     end
 
+    database.startTimeStamp = computer.uptime()
+
     if model == "1" then
         action.insertItemsIntoReactorChamber(runningTable)
     end
@@ -71,7 +153,7 @@ local function init()
         action.stopAllReactorChamber(false)
         os.exit(0)
     end
-    database.scanAdator()
+    database.scanAdaptor()
 end
 
 init()
