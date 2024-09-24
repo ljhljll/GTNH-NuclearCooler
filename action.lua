@@ -41,7 +41,6 @@ local function stopReactorChamberByRc(rc, isBlock)
     -- setOutput为非直接调用，其正确输出对应的红石信号需要至少1tick时间
     redstone.setOutput(rc.reactorChamberSideToRS, 0)
     if isBlock then
-        -- 确保反应堆先停机再继续运行
         repeat
             coroutineSleep(0.5)
             local singal = redstone.getOutput(rc.reactorChamberSideToRS)

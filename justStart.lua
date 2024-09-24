@@ -37,9 +37,6 @@ local function clearAndIntervalMessages(rcTable)
     end
     while true do
         action.coroutineSleep(cleatLogInterval)
-        -- for i = 1, (cleatLogInterval * 10) do
-        --     coroutine.yield()
-        -- end
         os.execute("cls")
         coroutine.yield()
         printResidentMessages()
@@ -47,6 +44,7 @@ local function clearAndIntervalMessages(rcTable)
         printOverHeated(rcTable)
         coroutine.yield()
         print(string.format("下一次清屏计划在 %d 秒后", cleatLogInterval))
+
     end
 end
 
