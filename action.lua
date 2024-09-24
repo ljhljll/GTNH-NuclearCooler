@@ -115,7 +115,7 @@ local function preheatRc(rc)
     local rcComponent = component.proxy(rc.reactorChamberAddr)
     if rcComponent.getHeat() >= rc.thresholdHeat then return true end
     insert(rc.transforAddr, rc.tempSide, 1, rc.reactorChamberSide, rc.preheatItem, -1)
-    startReactorChamber(rc)
+    startReactorChamber(rc, false)
     repeat
         local heat = rcComponent.getHeat()
         if not database.getGlobalRedstone() then
