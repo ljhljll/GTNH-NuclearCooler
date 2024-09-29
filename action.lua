@@ -5,8 +5,8 @@ local coroutine = require("coroutine")
 local computer = require("computer")
 
 local function coroutineSleep(time)
-    local DDL = computer.uptime() + time 
-    while computer.uptime() < DDL do 
+    local DDL = computer.uptime() + time
+    while computer.uptime() < DDL do
         coroutine.yield()
     end
 end
@@ -94,7 +94,8 @@ local function startReactorChamber(rc, isBlock)
         return
     end
     if rc.aborted then
-        print(string.format("%s was over-heated, it cannot start. You can manually cooldown it and then restart the program.", rc.name))
+        print(string.format(
+            "%s was over-heated, it cannot start. You can manually cooldown it and then restart the program.", rc.name))
         return
     end
     rc.running = true
@@ -118,6 +119,8 @@ local function preheatRc(rc)
     repeat
         local heat = rcComponent.getHeat()
         if not database.getGlobalRedstone() then
+            stopReactorChamberByRc(rc, true)
+            remove(rc.transforAddr, rc.reactorChamberSide, 1, rc.tempSide)
             break
         end
     until (heat >= rc.thresholdHeat)
@@ -136,6 +139,9 @@ local function insertItemsIntoReactorChamber(runningTable)
 
         if rc.thresholdHeat ~= -1 then
             preheatRc(rc)
+            if not database.getGlobalRedstone() then
+                break
+            end
             print(rc.name .. " 预热完成")
         end
 
