@@ -141,17 +141,7 @@ local function justStart()
     database.startTimeStamp = computer.uptime()
 
     if model == "1" then
-        local initCoroutine = coroutine.create(function()
-            action.insertItemsIntoReactorChamber(runningTable)
-        end)
-        while true do
-            if coroutine.status(initCoroutine) ~= "dead" then
-                coroutine.resume(initCoroutine)
-            end
-            if not database.getGlobalRedstone() then
-                os.exit(0)
-            end
-        end
+        action.insertItemsIntoReactorChamber(runningTable)
     end
     reactorChamberStart(runningTable)
 end

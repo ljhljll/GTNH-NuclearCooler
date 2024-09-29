@@ -111,21 +111,48 @@ local function startReactorChamber(rc, isBlock)
     print(rc.name .. " is running")
 end
 
+local function preheatInsert(transforAddr, sourceSide, targetSlot, outputSide, name, dmg)
+    local transposer = component.proxy(transforAddr)
+    while true do
+        local sourceBox = transposer.getAllStacks(sourceSide).getAll()
+        for index, item in pairs(sourceBox) do
+            if item.name == name and (dmg == -1 or item.damage < dmg) then
+                local insertCount = transposer.transferItem(sourceSide, outputSide, 1, index + 1, targetSlot)
+                if insertCount > 0 then
+                    return
+                end
+            end
+        end
+        sourceBox = nil
+        print("材料箱未找到物品:" .. name)
+        os.sleep(0)
+    end
+end
+
+local function preheatRemove(transforAddr, sourceSide, slot, outpuSide)
+    local transposer = component.proxy(transforAddr)
+    repeat
+        local removeCount = transposer.transferItem(sourceSide, outpuSide, 1, slot)
+        if removeCount == 0 then
+            print("箱子已满,无法输出物品")
+        end
+        os.sleep(0)
+    until (removeCount > 0)
+end
+
 local function preheatRc(rc)
     local rcComponent = component.proxy(rc.reactorChamberAddr)
     if rcComponent.getHeat() >= rc.thresholdHeat then return true end
-    insert(rc.transforAddr, rc.tempSide, 1, rc.reactorChamberSide, rc.preheatItem, -1)
+    preheatInsert(rc.transforAddr, rc.tempSide, 1, rc.reactorChamberSide, rc.preheatItem, -1)
     startReactorChamber(rc, false)
     repeat
         local heat = rcComponent.getHeat()
         if not database.getGlobalRedstone() then
-            stopReactorChamberByRc(rc, true)
-            remove(rc.transforAddr, rc.reactorChamberSide, 1, rc.tempSide)
             break
         end
     until (heat >= rc.thresholdHeat)
-    stopReactorChamberByRc(rc, true)
-    remove(rc.transforAddr, rc.reactorChamberSide, 1, rc.tempSide)
+    stopReactorChamberByRc(rc, false)
+    preheatRemove(rc.transforAddr, rc.reactorChamberSide, 1, rc.tempSide)
 end
 
 -- 向核电仓中转移原材料
@@ -140,7 +167,8 @@ local function insertItemsIntoReactorChamber(runningTable)
         if rc.thresholdHeat ~= -1 then
             preheatRc(rc)
             if not database.getGlobalRedstone() then
-                break
+                print("终止初始化")
+                os.exit(0)
             end
             print(rc.name .. " 预热完成")
         end
