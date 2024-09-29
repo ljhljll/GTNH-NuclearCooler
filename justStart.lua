@@ -55,7 +55,7 @@ local function heatMonitor(rcTable)
             if rc.scheme == "mox" and not rc.aborted then
                 local rcComponent = component.proxy(rc.reactorChamberAddr)
                 local heat = rcComponent.getHeat()
-                if heat >= rc.thresholdHeat + 100 or heat >= 9960 then
+                if heat >= rc.thresholdHeat + 100 or (heat >= 9960 and rc.thresholdHeat ~= 9900) then
                     rc.aborted = true
                     action.stopReactorChamberByRc(rc, false)
                 end
