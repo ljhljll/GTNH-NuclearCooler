@@ -74,26 +74,57 @@ end
 
 local function reactorChamberStart(rcTable)
     os.execute("cls")
-    -- local threads = {}
     local coroutines = {}
-
+    -- 核电检测协程
     for i = 1, #rcTable do
-        coroutines[i] = coroutine.create(function()
-            detection.runningReactorChamber(database.reactorChambers[rcTable[i]])
-        end)
+        coroutines[i] = {
+            coroutine = coroutine.create(function()
+                detection.runningReactorChamber(database.reactorChambers[rcTable[i]])
+            end),
+            type = 0,
+            index = i
+        }
     end
-    coroutines[#coroutines + 1] = coroutine.create(function()
-        clearAndIntervalMessages(rcTable)
-    end)
-    coroutines[#coroutines + 1] = coroutine.create(function() 
-        heatMonitor(rcTable)
-    end)
+    -- 日志打印协程
+    coroutines[#coroutines + 1] = {
+        coroutine = coroutine.create(function()
+            clearAndIntervalMessages(rcTable)
+        end),
+        type = 1,
+        index = #coroutines + 1
+    }
+    -- 温控协程
+    coroutines[#coroutines + 1] = {
+        coroutine = coroutine.create(function()
+            heatMonitor(rcTable)
+        end),
+        type = 2,
+        index = #coroutines + 1
+    }
     while true do
         for i = 1, #coroutines do
-            if coroutine.status(coroutines[i]) ~= "dead" then
-                local status, err = coroutine.resume(coroutines[i])
+            if coroutine.status(coroutines[i].coroutine) ~= "dead" then
+                local status, err = coroutine.resume(coroutines[i].coroutine)
                 if not status then
                     print("Error in coroutine " .. i .. ": " .. err)
+                    coroutine.close(coroutines[i].coroutine)
+                    -- 重新实例化出问题的协程
+                    local cor = nil;
+                    if coroutines[i].type == 0 then
+                        cor = coroutine.create(function()
+                            detection.runningReactorChamber(database.reactorChambers[rcTable[i]])
+                        end)
+                    elseif coroutines[i].type == 1 then
+                        cor = coroutine.create(function()
+                            clearAndIntervalMessages(rcTable)
+                        end)
+                    elseif coroutines[i].type == 2 then
+                        cor = coroutine.create(function()
+                            heatMonitor(rcTable)
+                        end)
+                    end
+                    coroutines[i].coroutine = cor
+                    coroutine.resume(coroutines[i].coroutine)
                 end
             end
         end
