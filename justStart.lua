@@ -40,7 +40,7 @@ local function printResidentMessages()
     local time = computer.uptime()
     local diffSeconds = math.floor(time - database.startTimeStamp)
     local days = math.floor(diffSeconds / 86400)
-    local hours = math.floor((diffSeconds %  86400) / 3600)
+    local hours = math.floor((diffSeconds % 86400) / 3600)
     local minutes = math.floor((diffSeconds % 3600) / 60)
     print(string.format("本核电站已安全运行 %d 天 %d 时 %d 分。道路千万条，安全第一条；核电不规范，回档两行泪。", days, hours, minutes))
 end
