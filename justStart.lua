@@ -127,7 +127,7 @@ local function handleCoroutineError(coroutineData, rcTable)
     
     -- 关闭旧协程
     if coroutine.status(coroutineData.coroutine) ~= "dead" then
-        coroutine.close(coroutineData.coroutine)
+        coroutineData.coroutine = nil
     end
     
     -- 创建新协程
@@ -187,6 +187,7 @@ local function emergencyShutdown(rcTable)
                 action.stopReactorChamberByRc(rc, true)
             end
         end)
+        coroutine.resume(shutdownCoroutines[i])
     end
     
     -- 等待所有反应堆停机
@@ -248,7 +249,7 @@ local function reactorChamberStart(rcTable)
     -- 清理协程资源
     for _, coroData in ipairs(coroutines) do
         if coroutine.status(coroData.coroutine) ~= "dead" then
-            coroutine.close(coroData.coroutine)
+            coroData.coroutine= nil
         end
     end
     coroutines = nil
