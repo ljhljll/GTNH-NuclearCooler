@@ -281,7 +281,7 @@ local function validateReactorConfig(choices)
     
     return validChoices
 end
-
+-- 主入口
 local function justStart()
     print("=== GTNH 核反应堆控制系统 ===")
     print("(0) 直接启动 (1) 配置启动 (-1) 退出")
