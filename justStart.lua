@@ -98,7 +98,7 @@ local function heatMonitor(rcTable)
         if currentTime - lastCheck >= checkInterval then
             for i = 1, #rcTable do 
                 local rc = database.reactorChambers[rcTable[i]]
-                if not rc or rc.scheme ~= "mox" or rc.aborted then 
+                if not rc or rc.scheme == "mox" or not rc.aborted then 
                     goto continue_reactor
                 end
                 
