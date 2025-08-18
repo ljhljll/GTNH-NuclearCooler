@@ -13,6 +13,41 @@ local COROUTINE_TYPES = {
     HEAT_MONITOR = 2
 }
 
+local function printResidentMessages()
+    local time = computer.uptime()
+    local diffSeconds = math.floor(time - database.startTimeStamp)
+    local days = math.floor(diffSeconds / 86400)
+    local hours = math.floor((diffSeconds % 86400) / 3600)
+    local minutes = math.floor((diffSeconds % 3600) / 60)
+    print(string.format("本核电站已安全运行 %d 天 %d 时 %d 分。道路千万条，安全第一条；核电不规范，回档两行泪。", days, hours, minutes))
+end
+
+local function printOverHeated(rcTable)
+    local outputLines = {}
+    for i = 1, #rcTable do
+        local rc = database.reactorChambers[rcTable[i]]
+        if not rc then goto continue end
+
+        local rcComponent = component.proxy(rc.reactorChamberAddr)
+        if not rcComponent then goto continue end
+
+        local heat = rcComponent.getHeat()
+        if rc.aborted then
+            table.insert(outputLines,
+                string.format("The heat of %s is %d K, it is aborted due to over-heated", rc.name, heat))
+        else
+            table.insert(outputLines, string.format("The heat of %s is %d K", rc.name, heat))
+        end
+        ::continue::
+    end
+
+    -- 一次性输出所有行，减少I/O操作
+    for _, line in ipairs(outputLines) do
+        print(line)
+    end
+    outputLines = nil -- 清理内存
+end
+
 -- 温度监控器，过热强制关机避免爆炸
 local function heatMonitor(rcTable)
     local checkInterval = 0.1 -- 检查间隔
@@ -85,40 +120,6 @@ function CoroutineManager.restartCoroutine(coroutineData, rcTable)
     
     local newCoro = coroutine.create(creator(rcTable[coroutineData.index] or rcTable))
     return newCoro
-end
-
-local function printResidentMessages()
-    local time = computer.uptime()
-    local diffSeconds = math.floor(time - database.startTimeStamp)
-    local days = math.floor(diffSeconds / 86400)
-    local hours = math.floor((diffSeconds % 86400) / 3600)
-    local minutes = math.floor((diffSeconds % 3600) / 60)
-    print(string.format("本核电站已安全运行 %d 天 %d 时 %d 分。道路千万条，安全第一条；核电不规范，回档两行泪。", days, hours, minutes))
-end
-
-local function printOverHeated(rcTable)
-    local outputLines = {}
-    for i = 1, #rcTable do
-        local rc = database.reactorChambers[rcTable[i]]
-        if not rc then goto continue end
-        
-        local rcComponent = component.proxy(rc.reactorChamberAddr)
-        if not rcComponent then goto continue end
-        
-        local heat = rcComponent.getHeat()
-        if rc.aborted then 
-            table.insert(outputLines, string.format("The heat of %s is %d K, it is aborted due to over-heated", rc.name, heat))
-        else
-            table.insert(outputLines, string.format("The heat of %s is %d K", rc.name, heat))
-        end
-        ::continue::
-    end
-    
-    -- 一次性输出所有行，减少I/O操作
-    for _, line in ipairs(outputLines) do
-        print(line)
-    end
-    outputLines = nil -- 清理内存
 end
 
 -- 处理协程错误并重启
