@@ -47,8 +47,8 @@
 | `outputSide`             | `number`  |                                | 以`转运器`为基准,输出低耐久冷却单元的箱子方向值              |
 | `changeItemOutputSide`   | `number`  |                                | 以`转运器`为基准,输出枯竭燃料棒方向值                        |
 | `tempSide`               | `number`  |                                | 以`转运器`为基准,存放预加热的物品的箱子方向值                |
-| `energy`                 | `boolean` | nil                            | 是否参与电量控制<br />`true`:是<br />`nil|false`:否          |
-| `aborted`                | `boolean` | nil                            | 是否进行过热检测<br />`true`:是<br />`nil|false`:否          |
+| `energy`                 | `boolean` | nil                            | 是否参与电量控制<br />`true`:是<br />`nil\|false`:否          |
+| `aborted`                | `boolean` | nil                            | 是否进行过热检测<br />`true`:是<br />`nil\|false`:否          |
 
 
 
