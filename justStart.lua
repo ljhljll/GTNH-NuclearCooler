@@ -13,6 +13,57 @@ local COROUTINE_TYPES = {
     HEAT_MONITOR = 2
 }
 
+-- 温度监控器，过热强制关机避免爆炸
+local function heatMonitor(rcTable)
+    local checkInterval = 0.1 -- 检查间隔
+    local lastCheck = 0
+
+    while true do
+        local currentTime = computer.uptime()
+        if currentTime - lastCheck >= checkInterval then
+            for i = 1, #rcTable do
+                local rc = database.reactorChambers[rcTable[i]]
+                if not rc or rc.scheme == "mox" or not rc.aborted then
+                    goto continue_reactor
+                end
+
+                local rcComponent = component.proxy(rc.reactorChamberAddr)
+                if not rcComponent then goto continue_reactor end
+
+                local heat = rcComponent.getHeat()
+                local threshold = rc.thresholdHeat or 0
+
+                if heat >= threshold + 100 or heat >= 9960 then
+                    print(string.format("警告: %s 温度过高 (%d K)，执行紧急停堆！", rc.name, heat))
+                    rc.aborted = true
+                    action.stopReactorChamberByRc(rc, false)
+                end
+                ::continue_reactor::
+            end
+            lastCheck = currentTime
+        end
+        coroutine.yield()
+    end
+end
+
+-- 清理控制台打印信息，防止内存溢出
+local function clearAndIntervalMessages(rcTable)
+    local clearLogInterval = math.max(config.cleatLogInterval or 30, 5)
+
+    while true do
+        action.coroutineSleep(clearLogInterval)
+        os.execute("cls")
+
+        -- 批量处理输出，减少协程yield
+        printResidentMessages()
+        printOverHeated(rcTable)
+        print(string.format("下一次清屏计划在 %d 秒后", clearLogInterval))
+
+        -- 只在最后yield一次
+        coroutine.yield()
+    end
+end
+
 -- 协程管理器
 local CoroutineManager = {
     creators = {
@@ -68,57 +119,6 @@ local function printOverHeated(rcTable)
         print(line)
     end
     outputLines = nil -- 清理内存
-end
-
--- 清理控制台打印信息，防止内存溢出
-local function clearAndIntervalMessages(rcTable)
-    local clearLogInterval = math.max(config.cleatLogInterval or 30, 5)
-    
-    while true do
-        action.coroutineSleep(clearLogInterval)
-        os.execute("cls")
-        
-        -- 批量处理输出，减少协程yield
-        printResidentMessages()
-        printOverHeated(rcTable)
-        print(string.format("下一次清屏计划在 %d 秒后", clearLogInterval))
-        
-        -- 只在最后yield一次
-        coroutine.yield()
-    end
-end
-
--- 温度监控器，过热强制关机避免爆炸
-local function heatMonitor(rcTable)
-    local checkInterval = 0.1 -- 检查间隔
-    local lastCheck = 0
-    
-    while true do
-        local currentTime = computer.uptime()
-        if currentTime - lastCheck >= checkInterval then
-            for i = 1, #rcTable do 
-                local rc = database.reactorChambers[rcTable[i]]
-                if not rc or rc.scheme == "mox" or not rc.aborted then 
-                    goto continue_reactor
-                end
-                
-                local rcComponent = component.proxy(rc.reactorChamberAddr)
-                if not rcComponent then goto continue_reactor end
-                
-                local heat = rcComponent.getHeat()
-                local threshold = rc.thresholdHeat or 0
-                
-                if heat >= threshold + 100 or heat >= 9960 then 
-                    print(string.format("警告: %s 温度过高 (%d K)，执行紧急停堆！", rc.name, heat))
-                    rc.aborted = true
-                    action.stopReactorChamberByRc(rc, false)
-                end
-                ::continue_reactor::
-            end
-            lastCheck = currentTime
-        end
-        coroutine.yield()
-    end
 end
 
 -- 处理协程错误并重启
