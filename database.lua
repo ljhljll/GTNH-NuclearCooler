@@ -83,7 +83,7 @@ local function scanAdaptor()
     print("读取到" .. #reactorChamberList .. "个核电配置")
     
     -- 清理旧数据
-    reactorChambers = {}
+    for k in pairs(reactorChambers) do reactorChambers[k] = nil end
     componentCache = {}
     
     for i = 1, #reactorChamberList do

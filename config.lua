@@ -13,8 +13,10 @@ return {
                     slot = { 3, 6, 9, 10, 15, 22, 26, 29, 33, 40, 45, 46, 49, 52 }
                 },
                 {
-                    name = "gregtech:gt.reactorUraniumQuad",
-                    changeName = "IC2:reactorUraniumQuaddepleted",
+                    -- name = "gregtech:gt.reactorUraniumQuad",
+                    name = "gregtech:gt.rodUranium4",
+                    -- changeName = "IC2:reactorUraniumQuaddepleted",
+                    changeName = "gregtech:gt.depletedRodUranium4",  
                     dmg = -1,
                     count = 40,
                     slot = {
